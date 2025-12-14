@@ -4,7 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, Legend
 } from 'recharts';
-import { Wallet, Users, AlertCircle, CheckCircle2, TrendingUp, TrendingDown } from 'lucide-react';
+import { Wallet, Users, TrendingUp, TrendingDown } from 'lucide-react';
 
 interface DashboardProps {
   patients: Patient[];
@@ -85,85 +85,128 @@ const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <h2 className="text-2xl font-bold text-slate-800">Visão Geral</h2>
+    <div className="space-y-8 animate-in fade-in duration-500">
+      
+      {/* BANNER SECTION */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-50 via-blue-50/30 to-teal-50/30 border border-slate-200 p-6 sm:p-8 shadow-sm">
+        {/* Decorative Minimalist Elements */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-blue-100/40 blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-teal-100/40 blur-3xl pointer-events-none"></div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-slate-500 text-sm font-medium">Pacientes Ativos</p>
-              <h3 className="text-3xl font-bold text-slate-800 mt-1">{stats.active}</h3>
+        <div className="relative z-10">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Visão Geral</h2>
+                    <p className="text-sm text-slate-500 mt-1 font-medium">Resumo financeiro e operacional</p>
+                </div>
+                <span className="text-xs font-semibold text-slate-500 bg-white/80 backdrop-blur px-3 py-1.5 rounded-full border border-slate-200 shadow-sm flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
+                    </span>
+                    Atualizado em tempo real
+                </span>
             </div>
-            <div className="bg-blue-100 p-2 rounded-lg text-blue-600">
-              <Users size={24} />
-            </div>
-          </div>
-          <div className="mt-4 flex gap-2 text-xs font-medium text-slate-600">
-             <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">{stats.production} em Produção</span>
-             <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full">{stats.rework} Retrabalho</span>
-          </div>
-        </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between">
-          <div className="flex justify-between items-start">
-             <div>
-              <p className="text-slate-500 text-sm font-medium">Receita Total</p>
-              <h3 className="text-3xl font-bold text-emerald-600 mt-1">{formatCurrency(stats.totalRevenue)}</h3>
-            </div>
-            <div className="bg-emerald-100 p-2 rounded-lg text-emerald-600">
-              <TrendingUp size={24} />
-            </div>
-          </div>
-          <p className="text-xs text-slate-400 mt-4">Valor total de serviços registrados</p>
-        </div>
+            {/* KPI Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                {/* Active Patients */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border-t-4 border-blue-500 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
+                    <Users size={80} />
+                </div>
+                <div className="flex justify-between items-start z-10">
+                    <div>
+                    <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">Pacientes Ativos</p>
+                    <h3 className="text-3xl font-bold text-slate-800 mt-2">{stats.active}</h3>
+                    </div>
+                    <div className="bg-blue-50 p-2.5 rounded-lg text-blue-600">
+                    <Users size={20} />
+                    </div>
+                </div>
+                <div className="mt-6 flex flex-wrap gap-2 text-[10px] font-bold uppercase tracking-wide">
+                    <span className="bg-yellow-50 text-yellow-700 px-2 py-1 rounded border border-yellow-100">{stats.production} Produção</span>
+                    <span className="bg-red-50 text-red-700 px-2 py-1 rounded border border-red-100">{stats.rework} Retorno</span>
+                </div>
+                </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between">
-           <div className="flex justify-between items-start">
-             <div>
-              <p className="text-slate-500 text-sm font-medium">Despesas</p>
-              <h3 className="text-3xl font-bold text-red-600 mt-1">{formatCurrency(stats.totalExpenses)}</h3>
-            </div>
-            <div className="bg-red-100 p-2 rounded-lg text-red-600">
-              <TrendingDown size={24} />
-            </div>
-          </div>
-          <p className="text-xs text-slate-400 mt-4">Custos operacionais acumulados</p>
-        </div>
+                {/* Total Revenue */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border-t-4 border-emerald-500 flex flex-col justify-between hover:shadow-md transition-shadow group">
+                <div className="flex justify-between items-start">
+                    <div>
+                    <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">Receita Total</p>
+                    <h3 className="text-3xl font-bold text-emerald-600 mt-2">{formatCurrency(stats.totalRevenue)}</h3>
+                    </div>
+                    <div className="bg-emerald-50 p-2.5 rounded-lg text-emerald-600">
+                    <TrendingUp size={20} />
+                    </div>
+                </div>
+                <p className="text-xs text-slate-400 mt-4 font-medium">Acumulado do ano atual</p>
+                </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between">
-           <div className="flex justify-between items-start">
-             <div>
-              <p className="text-slate-500 text-sm font-medium">Lucro Líquido</p>
-              <h3 className={`text-3xl font-bold mt-1 ${stats.netProfit >= 0 ? 'text-slate-800' : 'text-red-600'}`}>
-                {formatCurrency(stats.netProfit)}
-              </h3>
+                {/* Expenses */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border-t-4 border-red-500 flex flex-col justify-between hover:shadow-md transition-shadow group">
+                <div className="flex justify-between items-start">
+                    <div>
+                    <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">Despesas</p>
+                    <h3 className="text-3xl font-bold text-red-600 mt-2">{formatCurrency(stats.totalExpenses)}</h3>
+                    </div>
+                    <div className="bg-red-50 p-2.5 rounded-lg text-red-600">
+                    <TrendingDown size={20} />
+                    </div>
+                </div>
+                <p className="text-xs text-slate-400 mt-4 font-medium">Custos operacionais</p>
+                </div>
+
+                {/* Net Profit */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border-t-4 border-indigo-500 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/30 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="flex justify-between items-start z-10">
+                    <div>
+                    <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">Lucro Líquido</p>
+                    <h3 className={`text-3xl font-bold mt-2 ${stats.netProfit >= 0 ? 'text-slate-800' : 'text-red-600'}`}>
+                        {formatCurrency(stats.netProfit)}
+                    </h3>
+                    </div>
+                    <div className="bg-indigo-50 p-2.5 rounded-lg text-indigo-600">
+                    <Wallet size={20} />
+                    </div>
+                </div>
+                <div className="mt-4 w-full bg-slate-100 rounded-full h-1.5 overflow-hidden z-10 relative">
+                    <div 
+                        className="bg-indigo-500 h-full rounded-full" 
+                        style={{ width: `${stats.totalRevenue > 0 ? Math.max(0, (stats.netProfit / stats.totalRevenue) * 100) : 0}%` }}
+                    ></div>
+                </div>
+                <p className="text-[10px] text-indigo-400 mt-1 text-right font-bold relative z-10">Margem Líquida</p>
+                </div>
             </div>
-            <div className="bg-indigo-100 p-2 rounded-lg text-indigo-600">
-              <Wallet size={24} />
-            </div>
-          </div>
-          <p className="text-xs text-slate-400 mt-4">Margem atual</p>
         </div>
       </div>
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 lg:col-span-2 min-w-0">
-          <h3 className="text-lg font-bold text-slate-800 mb-6">Fluxo Financeiro (Anual)</h3>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-bold text-slate-800">Fluxo Financeiro</h3>
+            <select className="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-slate-50 text-slate-600 outline-none">
+                <option>Últimos 12 meses</option>
+            </select>
+          </div>
+          
           <div className="h-72 w-full min-h-[18rem]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b'}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b'}} tickFormatter={(value) => `R$${value/1000}k`} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} tickFormatter={(value) => `R$${value/1000}k`} />
                 <RechartsTooltip 
-                  cursor={{fill: '#f1f5f9'}}
-                  contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
+                  cursor={{fill: '#f8fafc'}}
+                  contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
                 />
-                <Bar dataKey="revenue" name="Receita" fill="#14b8a6" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="expenses" name="Despesas" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="revenue" name="Receita" fill="#14b8a6" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                <Bar dataKey="expenses" name="Despesas" fill="#f87171" radius={[4, 4, 0, 0]} maxBarSize={40} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -180,10 +223,11 @@ const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
                    data={statusData}
                    cx="50%"
                    cy="50%"
-                   innerRadius={40}
-                   outerRadius={60}
-                   paddingAngle={2}
+                   innerRadius={50}
+                   outerRadius={70}
+                   paddingAngle={4}
                    dataKey="value"
+                   stroke="none"
                  >
                    {statusData.map((entry, index) => (
                      <Cell key={`cell-${index}`} fill={COLORS[entry.name as WorkflowStatus] || '#94a3b8'} />
@@ -195,34 +239,33 @@ const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
              </ResponsiveContainer>
            </div>
 
-           <div className="space-y-4 flex-1">
-             <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+           <div className="space-y-3 flex-1 overflow-y-auto pr-1 custom-scrollbar">
+             <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
                 <div className="flex items-center gap-3">
-                  <CheckCircle2 size={20} className="text-emerald-500" />
+                  <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
                   <span className="text-sm font-medium text-slate-700">Concluídos</span>
                 </div>
                 <span className="font-bold text-slate-800">{stats.completed}</span>
              </div>
-             <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+             <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
                 <div className="flex items-center gap-3">
-                  <AlertCircle size={20} className="text-yellow-500" />
+                  <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
                   <span className="text-sm font-medium text-slate-700">Em Produção</span>
                 </div>
                 <span className="font-bold text-slate-800">{stats.production}</span>
              </div>
-             <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+             <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
                 <div className="flex items-center gap-3">
-                  <AlertCircle size={20} className="text-red-500" />
+                  <div className="w-2 h-2 rounded-full bg-red-500"></div>
                   <span className="text-sm font-medium text-slate-700">Retrabalho</span>
                 </div>
                 <span className="font-bold text-slate-800">{stats.rework}</span>
              </div>
-             <div className="mt-auto pt-6 border-t border-slate-100">
-                <div className="text-center">
-                  <span className="text-4xl font-bold text-slate-800 block">{stats.active + stats.completed}</span>
-                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Total Geral</span>
-                </div>
-             </div>
+           </div>
+           
+           <div className="mt-4 pt-4 border-t border-slate-100 text-center">
+              <p className="text-xs text-slate-400">Total de Pacientes</p>
+              <p className="text-2xl font-bold text-slate-800">{stats.active + stats.completed}</p>
            </div>
         </div>
       </div>

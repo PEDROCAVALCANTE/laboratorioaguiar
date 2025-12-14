@@ -3,8 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LabPro Manager</title>
+    <title>Aguiar Prótese Dentária</title>
+    <link rel="icon" type="image/png" href="https://iili.io/fYtBdqF.png" />
+    
+    <!-- Tailwind CSS (Keeping CDN for simplicity in dev/prod hybrid, though npm is recommended for full prod) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/react-datepicker@6.9.0/dist/react-datepicker.css">
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -32,21 +36,23 @@
   <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@18.3.1",
-    "react/": "https://esm.sh/react@18.3.1/",
-    "react-dom": "https://esm.sh/react-dom@18.3.1",
-    "react-dom/": "https://esm.sh/react-dom@18.3.1/",
-    "recharts": "https://esm.sh/recharts@2.12.3?deps=react@18.3.1,react-dom@18.3.1",
-    "lucide-react": "https://esm.sh/lucide-react@0.344.0?deps=react@18.3.1",
-    "date-fns": "https://esm.sh/date-fns@3.6.0",
-    "date-fns/locale": "https://esm.sh/date-fns@3.6.0/locale",
-    "react-datepicker": "https://esm.sh/react-datepicker@6.9.0?deps=react@18.3.1,react-dom@18.3.1,date-fns@3.6.0",
-    "date-fns/": "https://esm.sh/date-fns@^4.1.0/"
+    "firebase/": "https://esm.sh/firebase@^12.6.0/",
+    "date-fns/": "https://esm.sh/date-fns@^4.1.0/",
+    "react-to-print": "https://esm.sh/react-to-print@^3.2.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "recharts": "https://esm.sh/recharts@^3.5.1",
+    "lucide-react": "https://esm.sh/lucide-react@^0.561.0",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "vite": "https://esm.sh/vite@^7.2.7",
+    "react-datepicker": "https://esm.sh/react-datepicker@^9.0.0"
   }
 }
 </script>
 </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>

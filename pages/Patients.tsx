@@ -1,34 +1,22 @@
-import React, { useState } from 'react';
-import { Patient, WorkflowStatus, PaymentStatus } from '../types';
-import { Plus, Search, Filter, Phone, Calendar, DollarSign, User, AlertCircle, Edit2, Trash2, FileText, ChevronRight } from 'lucide-react';
+
+import React, { useState, useRef } from 'react';
+import { Patient, WorkflowStatus, PaymentStatus, Clinic, ServiceItem } from '../types';
+import { Plus, Search, Filter, Phone, Calendar, DollarSign, User, AlertCircle, Edit2, Trash2, FileText, ChevronRight, CheckCircle, Printer, X } from 'lucide-react';
 import PatientWorkflow from './PatientWorkflow';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import { ptBR } from 'date-fns/locale';
+import { useReactToPrint } from 'react-to-print';
 
 registerLocale('pt-BR', ptBR);
 
 interface PatientsProps {
   patients: Patient[];
+  clinicsList: Clinic[];
+  servicesList: ServiceItem[];
   onAddPatient: (p: Patient) => void;
   onUpdatePatient: (p: Patient) => void;
   onDeletePatient: (id: string) => void;
 }
-
-const SERVICE_CATALOG = [
-  { name: 'Protocolo de Resina / Dente Delara', price: 1200 },
-  { name: 'Prótese Total', price: 280 },
-  { name: 'Protocolo Provisório Sem Barra', price: 550 },
-  { name: 'PPR - Montagem e Acrilização', price: 350 },
-  { name: 'Prótese Flexível', price: 400 },
-  { name: 'Placa de Bruxismo Acrílica', price: 200 },
-  { name: 'Placa de Bruxismo Acetato', price: 100 },
-  { name: 'Conserto Acrílico Simples', price: 60 },
-  { name: 'Reebasamento', price: 100 },
-  { name: 'Provisório', price: 60 },
-  { name: 'Placa de Clareamento', price: 60 },
-  { name: 'Prótese Parcial', price: 160 },
-  { name: 'Prótese Total Caracterizada STG', price: 400 },
-];
 
 // Helper para converter string YYYY-MM-DD para Date local
 const parseDate = (dateStr?: string) => {
@@ -45,13 +33,19 @@ const formatDate = (date: Date) => {
   return `${y}-${m}-${d}`;
 };
 
-const Patients: React.FC<PatientsProps> = ({ patients, onAddPatient, onUpdatePatient, onDeletePatient }) => {
+const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList, onAddPatient, onUpdatePatient, onDeletePatient }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeModalTab, setActiveModalTab] = useState<'info' | 'services'>('info');
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null); 
+  const [guidePatient, setGuidePatient] = useState<Patient | null>(null); // State for Closing Guide
   const [isWorkflowOpen, setIsWorkflowOpen] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  
+  // Ref for printing
+  const printRef = useRef<HTMLDivElement>(null);
 
   // Form State
   const initialFormState: Partial<Patient> = {
@@ -78,6 +72,7 @@ const Patients: React.FC<PatientsProps> = ({ patients, onAddPatient, onUpdatePat
 
   const handleOpenForm = (patient?: Patient) => {
     setActiveModalTab('info'); // Reset to first tab
+    setShowSuccess(false); // Reset success state
     if (patient) {
       setFormData({
         ...patient,
@@ -108,7 +103,7 @@ const Patients: React.FC<PatientsProps> = ({ patients, onAddPatient, onUpdatePat
          doctorPhone: formData.doctorPhone!,
          prosthesisType: formData.prosthesisType!,
          serviceValue: Number(formData.serviceValue),
-         laborCost: 0, // Removido do formulário, define como 0
+         laborCost: 0, 
          entryDate: new Date(formData.entryDate!).toISOString(),
          dueDate: new Date(formData.dueDate!).toISOString(),
          notes: formData.notes || '',
@@ -125,7 +120,7 @@ const Patients: React.FC<PatientsProps> = ({ patients, onAddPatient, onUpdatePat
         doctorPhone: formData.doctorPhone!,
         prosthesisType: formData.prosthesisType!,
         serviceValue: Number(formData.serviceValue),
-        laborCost: 0, // Removido do formulário, define como 0
+        laborCost: 0,
         entryDate: new Date(formData.entryDate!).toISOString(),
         dueDate: new Date(formData.dueDate!).toISOString(),
         notes: formData.notes || '',
@@ -141,12 +136,70 @@ const Patients: React.FC<PatientsProps> = ({ patients, onAddPatient, onUpdatePat
       };
       onAddPatient(newPatient);
     }
-    setIsFormOpen(false);
+
+    // Show success feedback and close after delay
+    setShowSuccess(true);
+    setTimeout(() => {
+      setIsFormOpen(false);
+      setShowSuccess(false);
+    }, 1500);
   };
 
   const openWorkflow = (patient: Patient) => {
     setSelectedPatient(patient);
     setIsWorkflowOpen(true);
+  };
+
+  const handlePrint = () => {
+    const printContent = printRef.current;
+    if (printContent) {
+        const originalContents = document.body.innerHTML;
+        const printContents = printContent.innerHTML;
+        
+        // Create a temporary iframe for printing to avoid losing react state
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'absolute';
+        iframe.style.width = '0px';
+        iframe.style.height = '0px';
+        iframe.style.border = 'none';
+        document.body.appendChild(iframe);
+        
+        const doc = iframe.contentWindow?.document;
+        if (doc) {
+            doc.open();
+            doc.write(`
+                <html>
+                <head>
+                    <title>Guia de Fechamento - ${guidePatient?.name || ''}</title>
+                    <script src="https://cdn.tailwindcss.com"></script>
+                    <style>
+                        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+                        body { font-family: 'Inter', sans-serif; background: white; padding: 20px; }
+                        @media print {
+                            @page { margin: 1cm; size: A4; }
+                            body { -webkit-print-color-adjust: exact; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${printContents}
+                    <script>
+                        setTimeout(() => {
+                            window.print();
+                            window.close();
+                        }, 500);
+                    </script>
+                </body>
+                </html>
+            `);
+            doc.close();
+            
+            // Cleanup iframe after print dialog closes (approximate)
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+            }, 2000);
+        }
+    }
   };
 
   const getStatusBadge = (status: WorkflowStatus) => {
@@ -163,7 +216,7 @@ const Patients: React.FC<PatientsProps> = ({ patients, onAddPatient, onUpdatePat
 
   const handleProsthesisTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    const service = SERVICE_CATALOG.find(s => s.name === value);
+    const service = servicesList.find(s => s.name === value);
     
     setFormData(prev => ({
         ...prev,
@@ -253,6 +306,21 @@ const Patients: React.FC<PatientsProps> = ({ patients, onAddPatient, onUpdatePat
 
               {/* Actions */}
               <div className="flex md:flex-col justify-end items-end gap-2 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-4">
+                
+                {/* Closing Guide Button - ONLY FOR COMPLETED */}
+                {patient.currentStatus === WorkflowStatus.CONCLUIDO && (
+                    <button 
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setGuidePatient(patient);
+                        }}
+                        className="p-2 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition"
+                        title="Emitir Guia de Fechamento"
+                    >
+                        <Printer size={18} />
+                    </button>
+                )}
+
                 <button 
                   onClick={() => handleOpenForm(patient)}
                   className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
@@ -261,7 +329,10 @@ const Patients: React.FC<PatientsProps> = ({ patients, onAddPatient, onUpdatePat
                   <Edit2 size={18} />
                 </button>
                 <button 
-                  onClick={() => onDeletePatient(patient.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPatientToDelete(patient);
+                  }}
                   className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                   title="Excluir"
                 >
@@ -331,7 +402,12 @@ const Patients: React.FC<PatientsProps> = ({ patients, onAddPatient, onUpdatePat
                         
                         <div>
                             <label className={labelClassName}>Clínica</label>
-                            <input required={activeModalTab === 'info'} type="text" className={inputClassName} value={formData.clinic} onChange={e => setFormData({...formData, clinic: e.target.value})} placeholder="Ex: Clínica Sorriso" />
+                            <input required={activeModalTab === 'info'} type="text" list="clinic-catalog" className={inputClassName} value={formData.clinic} onChange={e => setFormData({...formData, clinic: e.target.value})} placeholder="Ex: Clínica Sorriso" />
+                            <datalist id="clinic-catalog">
+                                {clinicsList.map(c => (
+                                    <option key={c.id} value={c.name} />
+                                ))}
+                            </datalist>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -372,8 +448,8 @@ const Patients: React.FC<PatientsProps> = ({ patients, onAddPatient, onUpdatePat
                               placeholder="Selecione ou digite..." 
                             />
                             <datalist id="service-catalog">
-                                {SERVICE_CATALOG.map(s => (
-                                    <option key={s.name} value={s.name}>{`R$ ${s.price.toFixed(2)}`}</option>
+                                {servicesList.map(s => (
+                                    <option key={s.id} value={s.name}>{`R$ ${s.price.toFixed(2)}`}</option>
                                 ))}
                             </datalist>
                             <p className="text-xs text-slate-400 mt-1">Selecione uma opção da lista para preencher o valor automaticamente.</p>
@@ -450,13 +526,173 @@ const Patients: React.FC<PatientsProps> = ({ patients, onAddPatient, onUpdatePat
                 </div>
               </div>
 
-              <div className="flex justify-end pt-6 gap-3 border-t border-slate-100 mt-6">
-                 <button type="button" onClick={() => setIsFormOpen(false)} className="px-5 py-2.5 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors font-medium">Cancelar</button>
-                 <button type="submit" className="px-6 py-2.5 bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-medium shadow-md shadow-teal-200/50 transition-colors">Salvar Paciente</button>
+              <div className="flex justify-end pt-6 gap-3 border-t border-slate-100 mt-6 min-h-[80px] items-center">
+                 {showSuccess ? (
+                   <div className="w-full flex items-center justify-center gap-2 text-emerald-600 bg-emerald-50 px-6 py-3 rounded-lg animate-in fade-in slide-in-from-bottom-2 border border-emerald-100">
+                     <CheckCircle size={22} className="text-emerald-500" />
+                     <span className="font-bold text-lg">Salvo com sucesso!</span>
+                   </div>
+                 ) : (
+                   <>
+                     <button type="button" onClick={() => setIsFormOpen(false)} className="px-5 py-2.5 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors font-medium">Cancelar</button>
+                     <button type="submit" className="px-6 py-2.5 bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-medium shadow-md shadow-teal-200/50 transition-colors">Salvar Paciente</button>
+                   </>
+                 )}
               </div>
             </form>
           </div>
         </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {patientToDelete && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200">
+            <div className="flex flex-col items-center text-center gap-4">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-red-600">
+                <Trash2 size={24} />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-800">Excluir Paciente?</h3>
+                <p className="text-slate-500 mt-2">
+                  Tem certeza que deseja excluir <strong>{patientToDelete.name}</strong>? 
+                  Esta ação não pode ser desfeita.
+                </p>
+              </div>
+              <div className="flex gap-3 w-full mt-2">
+                <button 
+                  onClick={() => setPatientToDelete(null)}
+                  className="flex-1 py-2.5 text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg font-medium transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  onClick={() => {
+                    onDeletePatient(patientToDelete.id);
+                    setPatientToDelete(null);
+                  }}
+                  className="flex-1 py-2.5 text-white bg-red-600 hover:bg-red-700 rounded-lg font-medium shadow-md shadow-red-200 transition-colors"
+                >
+                  Sim, Excluir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Closing Guide Modal */}
+      {guidePatient && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl flex flex-col h-[90vh]">
+               {/* Modal Header Actions */}
+               <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-xl">
+                  <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                    <Printer size={20} className="text-teal-600"/> 
+                    Visualizar Guia de Fechamento
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <button 
+                        onClick={handlePrint}
+                        className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 flex items-center gap-2 text-sm font-medium transition-colors"
+                    >
+                        <Printer size={16} /> Imprimir Guia
+                    </button>
+                    <button onClick={() => setGuidePatient(null)} className="p-2 hover:bg-slate-200 rounded-full text-slate-500">
+                        <X size={20} />
+                    </button>
+                  </div>
+               </div>
+
+               {/* Printable Area */}
+               <div className="flex-1 overflow-y-auto p-8 bg-slate-100">
+                   <div ref={printRef} className="bg-white p-12 max-w-2xl mx-auto shadow-sm min-h-[800px] flex flex-col relative text-slate-900">
+                      
+                      {/* Logo / Header */}
+                      <div className="flex items-center justify-center mb-10">
+                         <div className="w-40 h-40 flex items-center justify-center">
+                            <img 
+                                src="https://iili.io/fYtBdqF.png" 
+                                alt="Aguiar Prótese Dentária" 
+                                className="w-full h-full object-contain"
+                            />
+                         </div>
+                      </div>
+
+                      {/* Client Title */}
+                      <div className="text-center mb-8">
+                          <h2 className="text-2xl font-bold text-green-800 border-b-2 border-green-100 inline-block px-4 pb-1">
+                              {guidePatient.doctorName}
+                          </h2>
+                          <p className="text-xs text-slate-400 mt-2">{guidePatient.clinic}</p>
+                      </div>
+
+                      {/* Main Text Content - Generated based on user request */}
+                      <div className="mb-8 text-sm text-slate-600 leading-relaxed text-justify bg-slate-50 p-6 rounded-lg border border-slate-100">
+                          <p>
+                              Declaro para devidos fins de fechamento e conferência que o serviço laboratorial referente ao paciente 
+                              <strong className="text-slate-900"> {guidePatient.name} </strong> 
+                              foi concluído com sucesso. O trabalho realizado consiste em 
+                              <strong className="text-slate-900"> {guidePatient.prosthesisType} </strong>, 
+                              entregue conforme especificações técnicas solicitadas.
+                          </p>
+                          <p className="mt-4">
+                              Segue abaixo o detalhamento financeiro para processamento do pagamento por parte da clínica.
+                          </p>
+                      </div>
+
+                      {/* Table */}
+                      <div className="mb-12">
+                          <table className="w-full border-collapse">
+                              <thead>
+                                  <tr className="border-b-2 border-slate-800">
+                                      <th className="py-2 text-left text-sm font-semibold text-slate-700 italic">Paciente</th>
+                                      <th className="py-2 text-left text-sm font-semibold text-slate-700 italic">Trabalho Realizado</th>
+                                      <th className="py-2 text-right text-sm font-semibold text-slate-700 italic">Valores</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <tr className="border-b border-slate-200">
+                                      <td className="py-3 text-sm text-slate-800">{guidePatient.name}</td>
+                                      <td className="py-3 text-sm text-slate-600 italic">{guidePatient.prosthesisType}</td>
+                                      <td className="py-3 text-right text-sm font-bold text-slate-800">
+                                        {guidePatient.serviceValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                      </td>
+                                  </tr>
+                                  {/* Empty rows for visual spacing similar to PDF */}
+                                  {[1,2,3].map(i => (
+                                      <tr key={i} className="border-b border-slate-100 h-10">
+                                          <td></td><td></td><td></td>
+                                      </tr>
+                                  ))}
+                              </tbody>
+                              <tfoot>
+                                  <tr className="border-t-2 border-slate-800">
+                                      <td colSpan={2} className="py-3 text-right text-sm font-bold text-slate-700 uppercase">Total:</td>
+                                      <td className="py-3 text-right text-lg font-black text-slate-900">
+                                          {guidePatient.serviceValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                      </td>
+                                  </tr>
+                              </tfoot>
+                          </table>
+                      </div>
+
+                      {/* Footer Info */}
+                      <div className="mt-auto">
+                          <div className="text-xs text-slate-500 mb-6">
+                              <p>Marcos Antônio Lima Aguiar CPF: 012.271.432-65</p>
+                              <p>Fone: (62) 98151-6879</p>
+                          </div>
+                          
+                          <div className="text-center text-[10px] text-slate-400 italic border-t border-slate-100 pt-4">
+                              "Por isso, vos digo que tudo o que pedirdes, orando, crede que o recebereis e tê-lo-eis."
+                          </div>
+                      </div>
+
+                   </div>
+               </div>
+            </div>
+          </div>
       )}
 
       {/* Workflow Modal */}

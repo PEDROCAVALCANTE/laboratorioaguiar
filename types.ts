@@ -1,3 +1,4 @@
+
 export enum WorkflowStatus {
   ENTRADA = 'Entrada',
   EM_PRODUCAO = 'Em Produção',
@@ -43,6 +44,19 @@ export interface Expense {
   amount: number;
   date: string; // ISO String
   category: string; // Material, Funcionário, Aluguel, Outros
+}
+
+export interface Clinic {
+  id: string;
+  name: string;
+  doctorName: string;
+  phone?: string;
+}
+
+export interface ServiceItem {
+  id: string;
+  name: string;
+  price: number;
 }
 
 export interface DashboardStats {
