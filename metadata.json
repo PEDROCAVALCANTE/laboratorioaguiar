@@ -1,0 +1,5 @@
+{
+  "name": "LabPro Manager",
+  "description": "Sistema profissional de gerenciamento para laboratórios de prótese dentária. Controle de pacientes, fluxos de trabalho, financeiro e dashboard.",
+  "requestFramePermissions": []
+}
