@@ -1,4 +1,4 @@
-import * as firebaseApp from "firebase/app";
+import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, Firestore } from "firebase/firestore";
 import { Patient, Expense, Clinic, ServiceItem } from '../types';
 
@@ -31,11 +31,14 @@ const initFirebase = () => {
       }
     }
 
-    // Inicialização padrão do pacote NPM
-    // @ts-ignore
-    const app = firebaseApp.initializeApp(config);
-      
+    // Inicialização
+    const app = initializeApp(config);
+    
+    // O getFirestore irá utilizar a instância 'app' inicializada acima.
+    // Graças ao importmap correto, a instância de 'firebase/app' usada aqui
+    // é a mesma que 'firebase/firestore' espera.
     db = getFirestore(app);
+    
     console.log(`Firebase inicializado com sucesso! (Projeto: ${config.projectId})`);
     return true;
 

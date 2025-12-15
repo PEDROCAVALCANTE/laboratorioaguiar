@@ -222,7 +222,7 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
           <Search className="absolute left-3 top-2.5 text-slate-400" size={16} />
           <input 
             type="text" 
-            placeholder="Buscar por nome, clínica ou médico..." 
+            placeholder="Buscar por nome, clínica ou dentista..." 
             className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-md text-sm focus:ring-1 focus:ring-teal-500/20 focus:border-teal-500 outline-none text-slate-700 transition-all placeholder:text-slate-400"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -384,11 +384,11 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className={labelClassName}>Médico Responsável</label>
+                                <label className={labelClassName}>Dentista Responsável</label>
                                 <input required={activeModalTab === 'info'} type="text" className={inputClassName} value={formData.doctorName} onChange={e => setFormData({...formData, doctorName: e.target.value})} placeholder="Ex: Dr. Roberto" />
                             </div>
                             <div>
-                                <label className={labelClassName}>Telefone Médico</label>
+                                <label className={labelClassName}>Telefone Dentista</label>
                                 <input required={activeModalTab === 'info'} type="text" className={inputClassName} value={formData.doctorPhone} onChange={e => setFormData({...formData, doctorPhone: e.target.value})} placeholder="Ex: (11) 99999-9999" />
                             </div>
                         </div>
