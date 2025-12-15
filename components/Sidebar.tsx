@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, Users, TrendingDown, Wifi, X, Database, Cloud, Save, LogOut, Building2, ClipboardList } from 'lucide-react';
+import { LayoutDashboard, Users, TrendingDown, Wifi, X, Database, Cloud, Save, LogOut, Building2, ClipboardList, Archive } from 'lucide-react';
 import { StorageService } from '../services/storage';
 
 interface SidebarProps {
@@ -18,6 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'patients', label: 'Pacientes', icon: Users },
+    { id: 'archives', label: 'Arquivo', icon: Archive },
     { id: 'expenses', label: 'Despesas', icon: TrendingDown },
     { id: 'clinics', label: 'Clínicas', icon: Building2 },
     { id: 'services', label: 'Serviços', icon: ClipboardList },
@@ -132,52 +133,54 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
                 Conexão com Banco de Dados
               </h3>
               <button onClick={() => setShowConfig(false)} className="text-slate-400 hover:text-slate-600">
-                <X size={18} />
+                <X size={20} />
               </button>
             </div>
             
-            <div className="p-5 space-y-5">
-              {/* Status Display */}
-              <div className={`p-3 rounded-lg flex items-center gap-3 ${isOnline ? 'bg-blue-50 text-blue-800' : 'bg-emerald-50 text-emerald-800'}`}>
-                {isOnline ? <Cloud size={20} /> : <Wifi size={20} />}
-                <div>
-                  <p className="font-bold text-sm">{isOnline ? 'Conectado ao Firebase' : 'Modo Offline / Local'}</p>
-                  <p className="text-xs opacity-90">
-                    {isOnline 
-                      ? 'Sincronização ativa.' 
-                      : 'Dados salvos localmente.'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Configuration Form */}
+            <div className="p-5">
               {!isOnline ? (
-                <div className="space-y-3 animate-in slide-in-from-bottom-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">
-                    Configuração JSON
-                  </label>
-                  <textarea 
-                    className="w-full h-24 p-2 text-[10px] font-mono bg-slate-50 border border-slate-200 rounded-lg focus:ring-1 focus:ring-teal-500/20 focus:border-teal-500 outline-none resize-none"
-                    placeholder='{ "apiKey": "AIzaSy...", "authDomain": "...", "projectId": "..." }'
-                    value={configInput}
-                    onChange={(e) => setConfigInput(e.target.value)}
-                  />
-                  {configError && <p className="text-red-500 text-[10px] font-semibold">{configError}</p>}
-                  
+                <div className="space-y-4">
+                  <div className="bg-blue-50 text-blue-800 p-3 rounded-lg text-xs leading-relaxed border border-blue-100">
+                    <strong>Modo Local:</strong> Seus dados estão salvos apenas neste navegador. Para sincronizar em múltiplos dispositivos, cole a configuração do Firebase abaixo.
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">
+                      Configuração JSON (Firebase)
+                    </label>
+                    <textarea 
+                      className="w-full h-32 bg-slate-50 text-slate-600 border border-slate-200 rounded-md p-3 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-teal-500/50 resize-none"
+                      placeholder='{ "apiKey": "...", "authDomain": "...", ... }'
+                      value={configInput}
+                      onChange={(e) => setConfigInput(e.target.value)}
+                    ></textarea>
+                    {configError && <p className="text-red-500 text-xs mt-1 font-medium">{configError}</p>}
+                  </div>
+
                   <button 
                     onClick={handleSaveConfig}
-                    className="w-full py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 text-xs font-medium flex items-center justify-center gap-2 shadow-sm transition-colors"
+                    className="w-full py-2.5 bg-teal-600 text-white rounded-lg text-sm font-bold shadow-sm shadow-teal-200 hover:bg-teal-700 transition flex items-center justify-center gap-2"
                   >
-                    <Save size={14} /> Salvar e Conectar
+                    <Save size={16} /> Salvar e Conectar
                   </button>
                 </div>
               ) : (
-                <div className="space-y-3 pt-2 border-t border-slate-100">
+                <div className="space-y-4 text-center py-4">
+                  <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <Cloud size={32} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-800">Conectado à Nuvem</h4>
+                    <p className="text-xs text-slate-500 mt-1 px-4">
+                      Seus dados estão sendo sincronizados automaticamente.
+                    </p>
+                  </div>
+                  
                   <button 
                     onClick={handleDisconnect}
-                    className="w-full py-2 bg-red-50 text-red-600 border border-red-100 rounded-lg hover:bg-red-100 text-xs font-medium flex items-center justify-center gap-2 transition-colors"
+                    className="mt-4 px-4 py-2 bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 mx-auto"
                   >
-                    <LogOut size={14} /> Desconectar
+                    <LogOut size={14} /> Desconectar (Voltar ao Local)
                   </button>
                 </div>
               )}

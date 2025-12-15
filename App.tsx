@@ -6,6 +6,7 @@ import Patients from './pages/Patients';
 import Expenses from './pages/Expenses';
 import Clinics from './pages/Clinics';
 import ServicesPage from './pages/ServicesPage';
+import Archives from './pages/Archives'; // Nova importação
 import { StorageService } from './services/storage';
 import { Patient, Expense, Clinic, ServiceItem } from './types';
 import { Menu } from 'lucide-react';
@@ -70,14 +71,7 @@ const App: React.FC = () => {
                 name: s.name, 
                 price: s.price 
             }));
-            // We set state but don't force save to DB immediately to avoid spam, 
-            // but for a better UX we can just show them. 
-            // If the user wants to persist they can 'add'. 
-            // OR we can auto-save. Let's just set them in state for now, 
-            // effectively acting as a default.
             setServices(initialServices);
-            // Optional: Auto-save to storage if you want them persisted immediately
-            // initialServices.forEach(s => StorageService.saveService(s));
         } else {
             setServices(loadedServices);
         }
@@ -86,11 +80,10 @@ const App: React.FC = () => {
             const initialClinics = DEFAULT_CLINICS.map((c, idx) => ({
                 id: `seed-${idx}`,
                 name: c,
-                doctorName: '', // Default empty for legacy list
+                doctorName: '', 
                 phone: ''
             }));
             setClinics(initialClinics);
-            // initialClinics.forEach(c => StorageService.saveClinic(c));
         } else {
             setClinics(loadedClinics);
         }
@@ -277,6 +270,9 @@ const App: React.FC = () => {
               clinicsList={clinics}
               servicesList={services}
             />
+          )}
+          {activeTab === 'archives' && (
+            <Archives patients={patients} />
           )}
           {activeTab === 'expenses' && (
             <Expenses 
