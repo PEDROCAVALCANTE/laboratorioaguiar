@@ -91,13 +91,20 @@ const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
   };
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return 'Bom dia';
+    if (hour >= 12 && hour < 18) return 'Boa tarde';
+    return 'Boa noite';
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       
       {/* Intro Section - Clean */}
       <div className="flex flex-col md:flex-row justify-between items-end gap-4 pb-2">
          <div>
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Bom dia, Doutor!</h1>
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">{getGreeting()}, Thaynara!</h1>
             <p className="text-slate-500 mt-1">Aqui está o resumo do laboratório hoje.</p>
          </div>
       </div>

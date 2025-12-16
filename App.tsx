@@ -333,11 +333,11 @@ const App: React.FC = () => {
                 
                 <div className="flex items-center gap-3 pl-2">
                    <div className="text-right hidden xl:block">
-                      <p className="text-xs font-bold text-slate-800">Admin</p>
+                      <p className="text-xs font-bold text-slate-800">Thaynara</p>
                       <p className="text-[10px] text-slate-500">Gerente</p>
                    </div>
                    <div className="w-9 h-9 rounded-full bg-slate-800 text-white flex items-center justify-center text-xs font-bold ring-4 ring-slate-100 cursor-pointer hover:bg-slate-700 transition-colors">
-                      LA
+                      TA
                    </div>
                 </div>
             </div>
