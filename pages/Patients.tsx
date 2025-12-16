@@ -52,9 +52,9 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
   const [formData, setFormData] = useState<Partial<Patient>>(initialFormState);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Clean Inputs - Alterado para bg-white para garantir contraste nas listras
-  const inputClassName = "w-full bg-white text-slate-800 border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all placeholder:text-slate-400 hover:border-blue-200 shadow-sm";
-  const labelClassName = "block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5 ml-1";
+  // Styling Constants
+  const inputClassName = "w-full bg-white text-slate-900 border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400 hover:border-blue-300 shadow-sm";
+  const labelClassName = "block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-0.5";
 
   const filteredPatients = patients.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -317,38 +317,38 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
 
       {/* MODAL */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200 overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200 overflow-hidden ring-1 ring-slate-900/5">
             
-            <div className="px-6 py-5 border-b border-slate-50 flex justify-between items-center bg-white">
+            <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
               <h3 className="text-lg font-bold text-slate-800">{isEditing ? 'Editar Paciente' : 'Novo Paciente'}</h3>
-              <button onClick={() => setIsFormOpen(false)} className="text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-50 transition"><X size={20} /></button>
+              <button onClick={() => setIsFormOpen(false)} className="text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-50 transition"><X size={20} /></button>
             </div>
 
-            <div className="flex border-b border-slate-100 bg-slate-50">
-                <button type="button" onClick={() => setActiveModalTab('info')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeModalTab === 'info' ? 'text-blue-600 border-blue-500 bg-white' : 'text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-100'}`}>Dados</button>
-                <button type="button" onClick={() => setActiveModalTab('services')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeModalTab === 'services' ? 'text-blue-600 border-blue-500 bg-white' : 'text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-100'}`}>Serviços</button>
+            <div className="flex border-b border-slate-100 bg-slate-50/50">
+                <button type="button" onClick={() => setActiveModalTab('info')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeModalTab === 'info' ? 'text-blue-600 border-blue-500 bg-white' : 'text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-100/50'}`}>Dados</button>
+                <button type="button" onClick={() => setActiveModalTab('services')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeModalTab === 'services' ? 'text-blue-600 border-blue-500 bg-white' : 'text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-100/50'}`}>Serviços</button>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto bg-white">
+            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto bg-white flex flex-col">
               
               {/* Info Tab - CANDY CANE STYLE */}
-              <div className={activeModalTab === 'info' ? 'block animate-in fade-in slide-in-from-left-2 duration-200' : 'hidden'}>
+              <div className={activeModalTab === 'info' ? 'contents animate-in fade-in slide-in-from-left-2 duration-200' : 'hidden'}>
                   {/* Stripe 1: Name (White) */}
-                  <div className="px-8 py-6 bg-white">
+                  <div className="px-8 py-5 bg-white border-b border-slate-100">
                       <label className={labelClassName}>Nome do Paciente</label>
                       <input required={activeModalTab === 'info'} type="text" className={inputClassName} value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Nome completo" />
                   </div>
                   
-                  {/* Stripe 2: Clinic (Light Slate) */}
-                  <div className="px-8 py-6 bg-slate-50 border-y border-slate-100">
+                  {/* Stripe 2: Clinic (Slate) */}
+                  <div className="px-8 py-5 bg-slate-50 border-b border-slate-200">
                       <label className={labelClassName}>Clínica</label>
                       <input required={activeModalTab === 'info'} type="text" list="clinic-catalog" className={inputClassName} value={formData.clinic} onChange={e => setFormData({...formData, clinic: e.target.value})} placeholder="Selecione ou digite" />
                       <datalist id="clinic-catalog">{clinicsList.map(c => <option key={c.id} value={c.name} />)}</datalist>
                   </div>
                   
                   {/* Stripe 3: Dentist Info (White) */}
-                  <div className="px-8 py-6 bg-white">
+                  <div className="px-8 py-5 bg-white border-b border-slate-100">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                           <div>
                               <label className={labelClassName}>Dentista</label>
@@ -361,22 +361,22 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
                       </div>
                   </div>
 
-                  <div className="px-8 py-6 bg-slate-50 border-t border-slate-100 flex justify-end">
-                       <button type="button" onClick={() => setActiveModalTab('services')} className="text-blue-600 text-sm font-semibold hover:bg-white px-4 py-2 rounded-lg transition flex items-center gap-1 shadow-sm border border-transparent hover:border-slate-100">Próximo <ChevronRight size={16} /></button>
+                  <div className="px-8 py-4 bg-slate-50 flex justify-end flex-1 items-start pt-6 border-b border-slate-100">
+                       <button type="button" onClick={() => setActiveModalTab('services')} className="text-blue-600 text-sm font-semibold hover:bg-white px-4 py-2 rounded-lg transition flex items-center gap-1 shadow-sm border border-transparent hover:border-slate-200 bg-white/50">Próximo <ChevronRight size={16} /></button>
                   </div>
               </div>
 
               {/* Services Tab - CANDY CANE STYLE */}
-              <div className={activeModalTab === 'services' ? 'block animate-in fade-in slide-in-from-right-2 duration-200' : 'hidden'}>
+              <div className={activeModalTab === 'services' ? 'contents animate-in fade-in slide-in-from-right-2 duration-200' : 'hidden'}>
                    {/* Stripe 1: Prosthesis Type (White) */}
-                   <div className="px-8 py-6 bg-white">
+                   <div className="px-8 py-5 bg-white border-b border-slate-100">
                       <label className={labelClassName}>Tipo de Prótese</label>
                       <input required={activeModalTab === 'services'} type="text" list="service-catalog" className={inputClassName} value={formData.prosthesisType} onChange={handleProsthesisTypeChange} placeholder="Selecione..." />
                       <datalist id="service-catalog">{servicesList.map(s => <option key={s.id} value={s.name}>{`R$ ${s.price.toFixed(2)}`}</option>)}</datalist>
                    </div>
 
-                   {/* Stripe 2: Value & Payment (Light Slate) */}
-                   <div className="px-8 py-6 bg-slate-50 border-y border-slate-100">
+                   {/* Stripe 2: Value & Payment (Slate) */}
+                   <div className="px-8 py-5 bg-slate-50 border-b border-slate-200">
                       <div className="grid grid-cols-2 gap-5">
                           <div>
                               <label className={labelClassName}>Valor (R$)</label>
@@ -393,7 +393,7 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
                    </div>
 
                    {/* Stripe 3: Dates (White) */}
-                   <div className="px-8 py-6 bg-white">
+                   <div className="px-8 py-5 bg-white border-b border-slate-100">
                       <div className="grid grid-cols-2 gap-5">
                           <div>
                               <label className={labelClassName}>Entrada</label>
@@ -410,15 +410,15 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
                       </div>
                    </div>
 
-                   {/* Stripe 4: Notes (Light Slate) */}
-                   <div className="px-8 py-6 bg-slate-50 border-t border-slate-100">
+                   {/* Stripe 4: Notes (Slate) */}
+                   <div className="px-8 py-5 bg-slate-50 border-b border-slate-200">
                       <label className={labelClassName}>Observações</label>
                       <textarea className={inputClassName} rows={2} value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} placeholder="Anotações opcionais..."></textarea>
                    </div>
               </div>
 
               {/* Footer Actions */}
-              <div className="p-6 border-t border-slate-200 flex justify-end gap-3 bg-white">
+              <div className="p-6 bg-white border-t border-slate-100 flex justify-end gap-3 mt-auto">
                  {showSuccess ? (
                    <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2.5 rounded-xl font-medium text-sm animate-in fade-in">
                      <CheckCircle size={18} /> Salvo!
