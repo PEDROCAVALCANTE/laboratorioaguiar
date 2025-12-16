@@ -31,7 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
 
       {/* Sidebar Container */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-100 shadow-xl md:shadow-none transform transition-transform duration-300 ease-in-out flex flex-col
+        fixed inset-y-0 left-0 z-50 w-64 bg-slate-50 border-r border-slate-200 shadow-xl md:shadow-none transform transition-transform duration-300 ease-in-out flex flex-col
         ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
         md:translate-x-0 md:w-56
       `}>
@@ -44,8 +44,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
         </div>
 
         {/* Logo Section */}
-        <div className="p-4 border-b border-slate-50 flex flex-col items-center justify-center">
-            <div className="w-full h-40 flex items-center justify-center">
+        <div className="p-4 border-b border-slate-200/60 flex flex-col items-center justify-center">
+            <div className="w-full h-24 flex items-center justify-center">
                 <img 
                 src="https://iili.io/fYtBdqF.png" 
                 alt="Aguiar Prótese Dentária" 
@@ -54,7 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
             </div>
         </div>
         
-        <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto custom-scrollbar">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -64,11 +64,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
                 onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium group ${
                   isActive 
-                    ? 'bg-slate-50 text-slate-800 shadow-sm border border-slate-200' 
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800 border border-transparent'
+                    ? 'bg-white text-slate-800 shadow-sm border border-slate-200/60' 
+                    : 'text-slate-500 hover:bg-white/60 hover:text-slate-800 border border-transparent'
                 }`}
               >
-                <div className={`p-1.5 rounded-md transition-colors ${isActive ? 'bg-white shadow-sm' : 'bg-slate-100 group-hover:bg-white group-hover:shadow-sm'}`}>
+                <div className={`p-1.5 rounded-md transition-colors ${isActive ? 'bg-slate-50 shadow-inner' : 'bg-white border border-slate-100 group-hover:bg-white group-hover:shadow-sm'}`}>
                     <Icon size={18} className={item.color} />
                 </div>
                 <span className={isActive ? 'font-bold' : ''}>{item.label}</span>
@@ -77,7 +77,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
           })}
         </nav>
 
-        <div className="p-3 border-t border-slate-50 space-y-3 bg-slate-50/30">
+        <div className="p-3 border-t border-slate-200/60 space-y-3 bg-slate-100/50">
           {/* Status Indicator */}
           <div className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-[11px] font-medium border transition-colors ${
             isOnline ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-white border-slate-200 text-slate-500'
