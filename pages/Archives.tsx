@@ -1,21 +1,26 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { Patient, WorkflowStatus, PaymentStatus } from '../types';
-import { Search, Filter, ArrowUpDown, CheckCircle2, AlertCircle, FileSpreadsheet, Table } from 'lucide-react';
+import { Search, Filter, ArrowUpDown, CheckCircle2, AlertCircle, FileSpreadsheet, Table, Upload, HelpCircle, Download } from 'lucide-react';
+import { StorageService } from '../services/storage';
 
 interface ArchivesProps {
   patients: Patient[];
+  onDataUpdate?: () => void;
 }
 
 type SortField = 'entryDate' | 'name' | 'clinic' | 'serviceValue' | 'currentStatus' | 'paymentStatus';
 type SortDirection = 'asc' | 'desc';
 type ViewMode = 'SYSTEM' | 'SHEET';
 
-const Archives: React.FC<ArchivesProps> = ({ patients }) => {
+const Archives: React.FC<ArchivesProps> = ({ patients, onDataUpdate }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('SYSTEM');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL'); // ALL, COMPLETED, ACTIVE
   const [sortField, setSortField] = useState<SortField>('entryDate');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [isImporting, setIsImporting] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // URL da Planilha fornecida
   const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1D90dfCmsOe-NxbFLMaFFyy59fLRJybGJ0BdJpDDxktA/edit?widget=true&headers=false";
@@ -25,6 +30,120 @@ const Archives: React.FC<ArchivesProps> = ({ patients }) => {
   const formatDate = (isoStr: string) => {
     if (!isoStr) return '-';
     return new Date(isoStr).toLocaleDateString('pt-BR');
+  };
+
+  // --- LÓGICA DE IMPORTAÇÃO CSV ---
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const processCSV = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      const text = e.target?.result as string;
+      if (!text) return;
+
+      try {
+        const rows = text.split('\n');
+        // Assumindo que a primeira linha é o cabeçalho
+        const headers = rows[0].toLowerCase().split(',').map(h => h.trim().replace(/"/g, ''));
+        
+        // Mapeamento de índices
+        const dateIdx = headers.findIndex(h => h.includes('data') || h.includes('entrada'));
+        const nameIdx = headers.findIndex(h => h.includes('paciente') || h.includes('nome'));
+        const clinicIdx = headers.findIndex(h => h.includes('clínica') || h.includes('clinica'));
+        const doctorIdx = headers.findIndex(h => h.includes('dentista') || h.includes('doutor'));
+        const serviceIdx = headers.findIndex(h => h.includes('serviço') || h.includes('trabalho') || h.includes('prótese') || h.includes('protese'));
+        const valueIdx = headers.findIndex(h => h.includes('valor') || h.includes('preço') || h.includes('total'));
+        const statusIdx = headers.findIndex(h => h.includes('status') || h.includes('situação'));
+
+        let importedCount = 0;
+
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i];
+          if (!row.trim()) continue;
+
+          // Regex para separar por vírgula, mas ignorar vírgulas dentro de aspas (ex: "Silva, Joao")
+          const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.trim().replace(/^"|"$/g, ''));
+
+          if (cols.length < 2) continue; // Linha inválida
+
+          // Parsing dos dados
+          const name = nameIdx > -1 ? cols[nameIdx] : 'Importado';
+          const clinic = clinicIdx > -1 ? cols[clinicIdx] : '';
+          const doctorName = doctorIdx > -1 ? cols[doctorIdx] : '';
+          const prosthesisType = serviceIdx > -1 ? cols[serviceIdx] : 'Serviço Diverso';
+          
+          // Tratamento de Valor (R$ 1.200,00 -> 1200.00)
+          let valStr = valueIdx > -1 ? cols[valueIdx] : '0';
+          valStr = valStr.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+          const serviceValue = parseFloat(valStr) || 0;
+
+          // Tratamento de Data (DD/MM/YYYY -> YYYY-MM-DD)
+          let dateStr = dateIdx > -1 ? cols[dateIdx] : '';
+          let isoDate = new Date().toISOString();
+          if (dateStr.includes('/')) {
+            const parts = dateStr.split('/');
+            if (parts.length === 3) {
+              // Assumindo DD/MM/YYYY
+              isoDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).toISOString();
+            }
+          }
+
+          // Tratamento de Status
+          const statusRaw = statusIdx > -1 ? cols[statusIdx].toLowerCase() : '';
+          let currentStatus = WorkflowStatus.ENTRADA;
+          let isActive = true;
+
+          if (statusRaw.includes('conclu') || statusRaw.includes('entregue') || statusRaw.includes('pronto')) {
+            currentStatus = WorkflowStatus.CONCLUIDO;
+            isActive = false; // Define como inativo se já estiver concluído
+          } else if (statusRaw.includes('produ') || statusRaw.includes('andamento')) {
+            currentStatus = WorkflowStatus.EM_PRODUCAO;
+          } else if (statusRaw.includes('provas') || statusRaw.includes('ajuste')) {
+            currentStatus = WorkflowStatus.RETORNO_AJUSTE;
+          }
+
+          const newPatient: Patient = {
+            id: `import-${Date.now()}-${i}`,
+            name: name || 'Sem Nome',
+            clinic: clinic || 'Sem Clínica',
+            doctorName: doctorName,
+            doctorPhone: '',
+            prosthesisType: prosthesisType,
+            serviceValue: serviceValue,
+            laborCost: 0,
+            entryDate: isoDate,
+            dueDate: new Date(new Date(isoDate).getTime() + (7 * 24 * 60 * 60 * 1000)).toISOString(), // +7 dias
+            notes: 'Importado via CSV',
+            paymentStatus: PaymentStatus.PENDENTE,
+            workflowHistory: [],
+            currentStatus: currentStatus,
+            isActive: isActive
+          };
+
+          await StorageService.savePatient(newPatient);
+          importedCount++;
+        }
+
+        alert(`${importedCount} registros importados com sucesso!`);
+        if (onDataUpdate) onDataUpdate();
+        
+      } catch (error) {
+        console.error(error);
+        alert('Erro ao processar o arquivo. Verifique se é um CSV válido.');
+      } finally {
+        setIsImporting(false);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      }
+    };
+
+    reader.readAsText(file);
   };
 
   // Filtragem e Ordenação (Apenas para modo Sistema)
@@ -111,6 +230,15 @@ const Archives: React.FC<ArchivesProps> = ({ patients }) => {
   return (
     <div className="space-y-4 animate-in fade-in duration-500 h-[calc(100vh-6rem)] flex flex-col">
       
+      {/* Hidden File Input */}
+      <input 
+        type="file" 
+        accept=".csv" 
+        ref={fileInputRef} 
+        onChange={processCSV} 
+        className="hidden" 
+      />
+
       {/* Header Compacto com Seletor de Modo */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex-shrink-0">
         <div>
@@ -120,29 +248,41 @@ const Archives: React.FC<ArchivesProps> = ({ patients }) => {
           <p className="text-xs text-slate-500 mt-0.5">Histórico e monitoramento de registros</p>
         </div>
         
-        <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
+        <div className="flex items-center gap-2">
             <button
-                onClick={() => setViewMode('SYSTEM')}
-                className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-bold transition-all ${
-                    viewMode === 'SYSTEM' 
-                    ? 'bg-white text-teal-700 shadow-sm' 
-                    : 'text-slate-500 hover:text-slate-700'
-                }`}
+                onClick={handleImportClick}
+                disabled={isImporting}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-slate-800 text-white hover:bg-slate-900 shadow-sm"
+                title="Faça download da planilha como CSV e importe aqui"
             >
-                <Table size={14} />
-                Sistema
+                {isImporting ? <div className="w-3 h-3 border-2 border-white/50 border-t-white rounded-full animate-spin"></div> : <Upload size={14} />}
+                Migrar Planilha (CSV)
             </button>
-            <button
-                onClick={() => setViewMode('SHEET')}
-                className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-bold transition-all ${
-                    viewMode === 'SHEET' 
-                    ? 'bg-white text-green-700 shadow-sm' 
-                    : 'text-slate-500 hover:text-slate-700'
-                }`}
-            >
-                <FileSpreadsheet size={14} />
-                Planilha Legada
-            </button>
+
+            <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
+                <button
+                    onClick={() => setViewMode('SYSTEM')}
+                    className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-bold transition-all ${
+                        viewMode === 'SYSTEM' 
+                        ? 'bg-white text-teal-700 shadow-sm' 
+                        : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                >
+                    <Table size={14} />
+                    Sistema
+                </button>
+                <button
+                    onClick={() => setViewMode('SHEET')}
+                    className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-bold transition-all ${
+                        viewMode === 'SHEET' 
+                        ? 'bg-white text-green-700 shadow-sm' 
+                        : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                >
+                    <FileSpreadsheet size={14} />
+                    Planilha Legada
+                </button>
+            </div>
         </div>
       </div>
 
@@ -268,6 +408,11 @@ const Archives: React.FC<ArchivesProps> = ({ patients }) => {
                 <div className="flex flex-col items-center gap-2 text-slate-400">
                     <FileSpreadsheet size={32} className="animate-pulse"/>
                     <span className="text-xs font-medium">Carregando Planilha Google...</span>
+                    
+                    <div className="bg-yellow-50 text-yellow-800 p-3 rounded-lg text-[10px] max-w-xs text-center border border-yellow-100 mt-2">
+                         <div className="font-bold flex items-center justify-center gap-1"><Download size={10}/> Dica:</div>
+                         Para trazer estes dados para o sistema, vá em <strong>Arquivo &gt; Fazer download &gt; Valores separados por vírgula (.csv)</strong> e use o botão "Migrar Planilha" acima.
+                    </div>
                 </div>
             </div>
             <iframe 

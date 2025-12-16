@@ -1,12 +1,11 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Patients from './pages/Patients';
 import Expenses from './pages/Expenses';
 import Clinics from './pages/Clinics';
 import ServicesPage from './pages/ServicesPage';
-import Archives from './pages/Archives'; // Nova importação
+import Archives from './pages/Archives';
 import { StorageService } from './services/storage';
 import { Patient, Expense, Clinic, ServiceItem } from './types';
 import { Menu } from 'lucide-react';
@@ -44,60 +43,62 @@ const App: React.FC = () => {
   const [services, setServices] = useState<ServiceItem[]>([]);
   
   const [isLoading, setIsLoading] = useState(true);
-  const [isOnline, setIsOnline] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(false);
 
-  // Load data on mount
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const [loadedPatients, loadedExpenses, loadedClinics, loadedServices, connectionStatus] = await Promise.all([
-          StorageService.getPatients(),
-          StorageService.getExpenses(),
-          StorageService.getClinics(),
-          StorageService.getServices(),
-          StorageService.testConnection()
-        ]);
-        
-        setPatients(loadedPatients);
-        setExpenses(loadedExpenses);
-        setIsOnline(connectionStatus);
+  // Load data function wrapped in useCallback to be passed down
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      // Check connection first
+      const connected = await StorageService.testConnection();
+      setIsOnline(connected);
 
-        // Seeding Data Logic (Run only if empty)
-        if (loadedServices.length === 0) {
-            const initialServices = DEFAULT_SERVICES.map((s, idx) => ({ 
-                id: `seed-${idx}`, 
-                name: s.name, 
-                price: s.price 
-            }));
-            setServices(initialServices);
-        } else {
-            setServices(loadedServices);
-        }
+      const [loadedPatients, loadedExpenses, loadedClinics, loadedServices] = await Promise.all([
+        StorageService.getPatients(),
+        StorageService.getExpenses(),
+        StorageService.getClinics(),
+        StorageService.getServices()
+      ]);
+      
+      setPatients(loadedPatients);
+      setExpenses(loadedExpenses);
 
-        if (loadedClinics.length === 0) {
-            const initialClinics = DEFAULT_CLINICS.map((c, idx) => ({
-                id: `seed-${idx}`,
-                name: c,
-                doctorName: '', 
-                phone: ''
-            }));
-            setClinics(initialClinics);
-        } else {
-            setClinics(loadedClinics);
-        }
-
-      } catch (error) {
-        console.error("Failed to load data", error);
-        setIsOnline(false);
-      } finally {
-        setIsLoading(false);
+      // Seeding Data Logic (Run only if empty)
+      if (loadedServices.length === 0) {
+          const initialServices = DEFAULT_SERVICES.map((s, idx) => ({ 
+              id: `seed-${idx}`, 
+              name: s.name, 
+              price: s.price 
+          }));
+          setServices(initialServices);
+      } else {
+          setServices(loadedServices);
       }
-    };
-    
-    fetchData();
+
+      if (loadedClinics.length === 0) {
+          const initialClinics = DEFAULT_CLINICS.map((c, idx) => ({
+              id: `seed-${idx}`,
+              name: c,
+              doctorName: '', 
+              phone: ''
+          }));
+          setClinics(initialClinics);
+      } else {
+          setClinics(loadedClinics);
+      }
+
+    } catch (error) {
+      console.error("Failed to load data", error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  // Initial load
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   // Handlers
   const handleAddPatient = async (patient: Patient) => {
@@ -106,9 +107,6 @@ const App: React.FC = () => {
       await StorageService.savePatient(patient);
       const updated = await StorageService.getPatients();
       setPatients(updated);
-      
-      const status = await StorageService.testConnection();
-      setIsOnline(status);
     } catch (error) {
       console.error("Error adding patient:", error);
       alert("Erro ao adicionar paciente.");
@@ -253,7 +251,7 @@ const App: React.FC = () => {
         {isLoading && (
           <div className="fixed top-20 md:top-4 right-4 md:right-8 z-50 bg-white/90 backdrop-blur px-4 py-2 rounded-full text-xs font-bold text-teal-600 shadow-md border border-teal-100 flex items-center gap-2 animate-pulse">
             <div className="w-3 h-3 border-2 border-teal-600 border-t-transparent rounded-full animate-spin"></div>
-            Sincronizando...
+            Processando...
           </div>
         )}
 
@@ -272,7 +270,7 @@ const App: React.FC = () => {
             />
           )}
           {activeTab === 'archives' && (
-            <Archives patients={patients} />
+            <Archives patients={patients} onDataUpdate={fetchData} />
           )}
           {activeTab === 'expenses' && (
             <Expenses 

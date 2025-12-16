@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { LayoutDashboard, Users, TrendingDown, Wifi, X, Database, Cloud, Save, LogOut, Building2, ClipboardList, Archive } from 'lucide-react';
-import { StorageService } from '../services/storage';
+import React from 'react';
+import { LayoutDashboard, Users, TrendingDown, WifiOff, Wifi, X, Archive, Building2, ClipboardList } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
@@ -11,39 +10,14 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, isOpen = false, onClose }) => {
-  const [showConfig, setShowConfig] = useState(false);
-  const [configInput, setConfigInput] = useState('');
-  const [configError, setConfigError] = useState('');
-
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'patients', label: 'Pacientes', icon: Users },
-    { id: 'archives', label: 'Arquivo', icon: Archive },
-    { id: 'expenses', label: 'Despesas', icon: TrendingDown },
-    { id: 'clinics', label: 'Clínicas', icon: Building2 },
-    { id: 'services', label: 'Serviços', icon: ClipboardList },
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+    { id: 'patients', label: 'Pacientes', icon: Users, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+    { id: 'archives', label: 'Arquivo', icon: Archive, color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
+    { id: 'expenses', label: 'Despesas', icon: TrendingDown, color: 'text-rose-600', bgColor: 'bg-rose-50' },
+    { id: 'clinics', label: 'Clínicas', icon: Building2, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+    { id: 'services', label: 'Serviços', icon: ClipboardList, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
   ];
-
-  const handleSaveConfig = async () => {
-    setConfigError('');
-    if (!configInput.trim()) {
-      setConfigError('Por favor, insira o código JSON de configuração.');
-      return;
-    }
-    
-    const success = await StorageService.setFirebaseConfig(configInput);
-    if (!success) {
-      setConfigError('JSON inválido ou configuração incompleta. Verifique o formato.');
-    } else {
-      // O serviço irá recarregar a página em caso de sucesso
-    }
-  };
-
-  const handleDisconnect = () => {
-    if (confirm('Deseja desconectar do banco de dados e voltar ao modo local?')) {
-      StorageService.disconnectFirebase();
-    }
-  };
 
   return (
     <>
@@ -55,7 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
         ></div>
       )}
 
-      {/* Sidebar Container - Reduced width from w-72/64 to w-64/56 */}
+      {/* Sidebar Container */}
       <div className={`
         fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-100 shadow-xl md:shadow-none transform transition-transform duration-300 ease-in-out flex flex-col
         ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
@@ -69,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
             </button>
         </div>
 
-        {/* Logo Section - Compact */}
+        {/* Logo Section */}
         <div className="p-6 border-b border-slate-50 flex flex-col items-center justify-center">
             <div className="w-full h-24 flex items-center justify-center p-2">
                 <img 
@@ -80,7 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
             </div>
         </div>
         
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -88,106 +62,37 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium ${
+                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium group ${
                   isActive 
-                    ? 'bg-teal-50 text-teal-700 shadow-sm border border-teal-100' 
+                    ? 'bg-slate-50 text-slate-800 shadow-sm border border-slate-200' 
                     : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800 border border-transparent'
                 }`}
               >
-                <Icon size={18} className={isActive ? 'text-teal-600' : 'text-slate-400'} />
-                <span>{item.label}</span>
+                <div className={`p-1.5 rounded-md transition-colors ${isActive ? 'bg-white shadow-sm' : 'bg-slate-100 group-hover:bg-white group-hover:shadow-sm'}`}>
+                    <Icon size={18} className={item.color} />
+                </div>
+                <span className={isActive ? 'font-bold' : ''}>{item.label}</span>
               </button>
             );
           })}
         </nav>
 
         <div className="p-3 border-t border-slate-50 space-y-3 bg-slate-50/30">
-          {/* Status Indicator (Clickable) */}
-          <button 
-            onClick={() => setShowConfig(true)}
-            className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-[11px] font-medium border transition-colors hover:bg-white hover:shadow-sm ${
-              isOnline 
-                ? 'bg-blue-50/50 border-blue-100 text-blue-600' 
-                : 'bg-white border-slate-200 text-slate-500'
-            }`}>
+          {/* Status Indicator */}
+          <div className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-[11px] font-medium border transition-colors ${
+            isOnline ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-white border-slate-200 text-slate-500'
+          }`}>
             <div className="flex items-center gap-2">
-              {isOnline ? <Cloud size={12} /> : <Wifi size={12} />}
-              <span>{isOnline ? 'Online' : 'Local'}</span>
+              {isOnline ? <Wifi size={12} /> : <WifiOff size={12} />}
+              <span>{isOnline ? 'Conectado (Nuvem)' : 'Modo Local (Offline)'}</span>
             </div>
-            <span className="opacity-70 underline">Config</span>
-          </button>
+          </div>
 
           <div className="text-[9px] text-slate-400 text-center font-medium">
              v1.2.0 • LabPro
           </div>
         </div>
       </div>
-
-      {/* Config/Help Modal */}
-      {showConfig && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100">
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-              <h3 className="font-bold text-slate-800 flex items-center gap-2 text-sm">
-                <Database size={16} className="text-teal-600"/> 
-                Conexão com Banco de Dados
-              </h3>
-              <button onClick={() => setShowConfig(false)} className="text-slate-400 hover:text-slate-600">
-                <X size={20} />
-              </button>
-            </div>
-            
-            <div className="p-5">
-              {!isOnline ? (
-                <div className="space-y-4">
-                  <div className="bg-blue-50 text-blue-800 p-3 rounded-lg text-xs leading-relaxed border border-blue-100">
-                    <strong>Modo Local:</strong> Seus dados estão salvos apenas neste navegador. Para sincronizar em múltiplos dispositivos, cole a configuração do Firebase abaixo.
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">
-                      Configuração JSON (Firebase)
-                    </label>
-                    <textarea 
-                      className="w-full h-32 bg-slate-50 text-slate-600 border border-slate-200 rounded-md p-3 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-teal-500/50 resize-none"
-                      placeholder='{ "apiKey": "...", "authDomain": "...", ... }'
-                      value={configInput}
-                      onChange={(e) => setConfigInput(e.target.value)}
-                    ></textarea>
-                    {configError && <p className="text-red-500 text-xs mt-1 font-medium">{configError}</p>}
-                  </div>
-
-                  <button 
-                    onClick={handleSaveConfig}
-                    className="w-full py-2.5 bg-teal-600 text-white rounded-lg text-sm font-bold shadow-sm shadow-teal-200 hover:bg-teal-700 transition flex items-center justify-center gap-2"
-                  >
-                    <Save size={16} /> Salvar e Conectar
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-4 text-center py-4">
-                  <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <Cloud size={32} />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-slate-800">Conectado à Nuvem</h4>
-                    <p className="text-xs text-slate-500 mt-1 px-4">
-                      Seus dados estão sendo sincronizados automaticamente.
-                    </p>
-                  </div>
-                  
-                  <button 
-                    onClick={handleDisconnect}
-                    className="mt-4 px-4 py-2 bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 mx-auto"
-                  >
-                    <LogOut size={14} /> Desconectar (Voltar ao Local)
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };

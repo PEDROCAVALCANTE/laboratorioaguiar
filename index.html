@@ -45,12 +45,10 @@
       }
     </style>
 
-    <!-- IMPORT MAP CORRETO (Firebase 10.x) -->
+    <!-- IMPORT MAP LIMPO (SEM FIREBASE CONFLITANTE) -->
     <script type="importmap">
 {
   "imports": {
-    "firebase/app": "https://esm.sh/firebase@10.12.0/app",
-    "firebase/firestore": "https://esm.sh/firebase@10.12.0/firestore?deps=firebase@10.12.0",
     "react": "https://esm.sh/react@18.3.1",
     "react/": "https://esm.sh/react@18.3.1/",
     "react-dom": "https://esm.sh/react-dom@18.3.1",
@@ -63,13 +61,15 @@
     "recharts": "https://esm.sh/recharts@2.12.7?external=react,react-dom",
     "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react,react-dom",
     "vite": "https://esm.sh/vite@5.3.1",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@4.3.1"
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@4.3.1",
+    "firebase/": "https://esm.sh/firebase@^12.6.0/"
   }
 }
 </script>
   </head>
 
   <body>
+    <!-- Ponto de montagem da aplicação React -->
     <div id="root"></div>
 
     <!-- ENTRY POINT DO APP -->
