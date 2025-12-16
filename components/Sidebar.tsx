@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Users, TrendingDown, WifiOff, Wifi, X, Archive, Building2, ClipboardList } from 'lucide-react';
+import { LayoutDashboard, Users, TrendingDown, WifiOff, Wifi, X, Archive, Building2, ClipboardList, LogOut } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
@@ -7,9 +7,10 @@ interface SidebarProps {
   isOnline: boolean;
   isOpen?: boolean;
   onClose?: () => void;
+  onLogout: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, isOpen = false, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, isOpen = false, onClose, onLogout }) => {
   const menuItems = [
     { 
       id: 'dashboard', 
@@ -125,9 +126,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
           })}
         </nav>
 
-        <div className="p-4 mt-auto">
+        <div className="p-4 mt-auto space-y-3">
           {/* Status Indicator */}
-          <div className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-[11px] font-medium border transition-colors mb-4 ${
+          <div className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-[11px] font-medium border transition-colors ${
             isOnline ? 'bg-emerald-50/50 border-emerald-100 text-emerald-700' : 'bg-slate-50 border-slate-200 text-slate-500'
           }`}>
             <div className="flex items-center gap-2">
@@ -136,6 +137,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
             </div>
             {isOnline ? <Wifi size={12} /> : <WifiOff size={12} />}
           </div>
+
+          {/* Logout Button */}
+          <button 
+            onClick={onLogout}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-red-50 hover:text-red-600 border border-transparent hover:border-red-100 transition-all"
+          >
+            <LogOut size={14} /> Sair do Sistema
+          </button>
 
           <div className="text-[10px] text-slate-300 text-center font-medium border-t border-slate-50 pt-3">
              Pedro Micro-Saas

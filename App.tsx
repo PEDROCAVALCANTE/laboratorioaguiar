@@ -6,6 +6,7 @@ import Expenses from './pages/Expenses';
 import Clinics from './pages/Clinics';
 import ServicesPage from './pages/ServicesPage';
 import Archives from './pages/Archives';
+import Login from './pages/Login';
 import { StorageService } from './services/storage';
 import { Patient, Expense, Clinic, ServiceItem } from './types';
 import { Menu } from 'lucide-react';
@@ -36,6 +37,11 @@ const DEFAULT_CLINICS = [
 ];
 
 const App: React.FC = () => {
+  // Auth State
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
+
+  // App State
   const [activeTab, setActiveTab] = useState('dashboard');
   const [patients, setPatients] = useState<Patient[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -46,8 +52,34 @@ const App: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(false);
 
+  // Check auth on mount
+  useEffect(() => {
+    const auth = localStorage.getItem('lab_aguiar_auth');
+    if (auth === 'authenticated') {
+      setIsAuthenticated(true);
+    }
+    setIsAuthChecking(false);
+  }, []);
+
+  // Login Handler
+  const handleLogin = () => {
+    localStorage.setItem('lab_aguiar_auth', 'authenticated');
+    setIsAuthenticated(true);
+  };
+
+  // Logout Handler
+  const handleLogout = () => {
+    localStorage.removeItem('lab_aguiar_auth');
+    setIsAuthenticated(false);
+    // Reset states optional but good practice
+    setActiveTab('dashboard');
+  };
+
   // Load data function wrapped in useCallback to be passed down
   const fetchData = useCallback(async () => {
+    // Only fetch if authenticated
+    if (!isAuthenticated) return;
+
     setIsLoading(true);
     try {
       // Check connection first
@@ -93,14 +125,16 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
-  // Initial load
+  // Fetch data when authentication status changes to true
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (isAuthenticated) {
+      fetchData();
+    }
+  }, [isAuthenticated, fetchData]);
 
-  // Handlers
+  // Handlers for Data (Same as before)
   const handleAddPatient = async (patient: Patient) => {
     setIsLoading(true);
     try {
@@ -207,6 +241,17 @@ const App: React.FC = () => {
     } catch (error) { console.error(error); } finally { setIsLoading(false); }
   };
 
+  // Auth Checking State
+  if (isAuthChecking) {
+    return null; // Or a splash screen
+  }
+
+  // Not Authenticated -> Show Login
+  if (!isAuthenticated) {
+    return <Login onLogin={handleLogin} />;
+  }
+
+  // Authenticated -> Show App
   if (isLoading && patients.length === 0 && expenses.length === 0 && clinics.length === 0) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-slate-50">
@@ -244,6 +289,7 @@ const App: React.FC = () => {
         isOnline={isOnline} 
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
+        onLogout={handleLogout}
       />
       
       {/* Main Content Area */}
