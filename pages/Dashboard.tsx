@@ -12,21 +12,27 @@ interface DashboardProps {
 }
 
 const COLORS = {
-  [WorkflowStatus.ENTRADA]: '#94a3b8', // Slate 400
-  [WorkflowStatus.EM_PRODUCAO]: '#eab308', // Yellow 500
-  [WorkflowStatus.ENVIADO_CLINICA]: '#3b82f6', // Blue 500
-  [WorkflowStatus.RETORNO_AJUSTE]: '#ef4444', // Red 500
-  [WorkflowStatus.REENVIO_CLINICA]: '#a855f7', // Purple 500
-  [WorkflowStatus.CONCLUIDO]: '#10b981', // Emerald 500
+  [WorkflowStatus.PLANO_CERA]: '#94a3b8', // Slate 400
+  [WorkflowStatus.MOLDEIRA_INDIVIDUAL]: '#3b82f6', // Blue 500
+  [WorkflowStatus.MONTAGEM_DENTES]: '#eab308', // Yellow 500
+  [WorkflowStatus.REMONTAR_DENTES]: '#ef4444', // Red 500
+  [WorkflowStatus.ACRILIZAR]: '#a855f7', // Purple 500
+  [WorkflowStatus.FINALIZADO]: '#10b981', // Emerald 500
 };
 
 const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
 
   const stats = useMemo(() => {
     const active = patients.filter(p => p.isActive).length;
-    const completed = patients.filter(p => p.currentStatus === WorkflowStatus.CONCLUIDO).length;
-    const production = patients.filter(p => p.currentStatus === WorkflowStatus.EM_PRODUCAO).length;
-    const rework = patients.filter(p => p.currentStatus === WorkflowStatus.RETORNO_AJUSTE).length;
+    const completed = patients.filter(p => p.currentStatus === WorkflowStatus.FINALIZADO).length;
+    
+    // Produção = Tudo que não é Finalizado nem Remontar
+    const production = patients.filter(p => 
+        p.currentStatus !== WorkflowStatus.FINALIZADO && 
+        p.currentStatus !== WorkflowStatus.REMONTAR_DENTES
+    ).length;
+    
+    const rework = patients.filter(p => p.currentStatus === WorkflowStatus.REMONTAR_DENTES).length;
 
     const totalRevenue = patients.reduce((acc, curr) => acc + curr.serviceValue, 0);
     const totalExpenses = expenses.reduce((acc, curr) => acc + curr.amount, 0);
@@ -240,7 +246,7 @@ const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
              <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-100">
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                  <span className="text-xs font-medium text-slate-700">Concluídos</span>
+                  <span className="text-xs font-medium text-slate-700">Finalizados</span>
                 </div>
                 <span className="font-bold text-xs text-slate-800">{stats.completed}</span>
              </div>
@@ -254,7 +260,7 @@ const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
              <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-100">
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
-                  <span className="text-xs font-medium text-slate-700">Retrabalho</span>
+                  <span className="text-xs font-medium text-slate-700">Remontar</span>
                 </div>
                 <span className="font-bold text-xs text-slate-800">{stats.rework}</span>
              </div>

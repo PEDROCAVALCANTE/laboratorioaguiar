@@ -89,7 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
           </div>
 
           <div className="text-[9px] text-slate-400 text-center font-medium">
-             v1.2.0 • LabPro
+             Direitos reservados para Pedro Micro Saas
           </div>
         </div>
       </div>

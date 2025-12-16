@@ -1,11 +1,11 @@
 
 export enum WorkflowStatus {
-  ENTRADA = 'Entrada',
-  EM_PRODUCAO = 'Em Produção',
-  ENVIADO_CLINICA = 'Enviado para Clínica',
-  RETORNO_AJUSTE = 'Retorno para Ajuste',
-  REENVIO_CLINICA = 'Reenvio para Clínica',
-  CONCLUIDO = 'Concluído'
+  PLANO_CERA = 'Plano de Cera',
+  MOLDEIRA_INDIVIDUAL = 'Moldeira individual',
+  MONTAGEM_DENTES = 'Montagem de Dentes',
+  REMONTAR_DENTES = 'Remontar Dentes',
+  ACRILIZAR = 'Acrilizar',
+  FINALIZADO = 'Finalizado'
 }
 
 export enum PaymentStatus {

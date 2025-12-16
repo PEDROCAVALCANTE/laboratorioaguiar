@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Patient, WorkflowStatus, WorkflowStep } from '../types';
-import { X, Save, Clock, CheckCircle2, Activity, Package, Send, RotateCcw } from 'lucide-react';
+import { X, Save, Clock, CheckCircle2, Activity, Package, Send, RotateCcw, FlaskConical, Smile, Layers, CircleDot } from 'lucide-react';
 
 interface PatientWorkflowProps {
   patient: Patient;
@@ -24,7 +24,7 @@ const PatientWorkflow: React.FC<PatientWorkflowProps> = ({ patient, isOpen, onCl
   if (!isOpen) return null;
 
   const handleAddStep = () => {
-    const isCompletedStatus = newStatus === WorkflowStatus.CONCLUIDO;
+    const isCompletedStatus = newStatus === WorkflowStatus.FINALIZADO;
     const newStep: WorkflowStep = {
       id: Date.now().toString(),
       status: newStatus,
@@ -44,22 +44,24 @@ const PatientWorkflow: React.FC<PatientWorkflowProps> = ({ patient, isOpen, onCl
 
   const getStatusColor = (status: WorkflowStatus) => {
     switch (status) {
-      case WorkflowStatus.CONCLUIDO: return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-      case WorkflowStatus.RETORNO_AJUSTE: return 'bg-red-50 text-red-800 border-red-200';
-      case WorkflowStatus.EM_PRODUCAO: return 'bg-amber-50 text-amber-800 border-amber-200';
-      case WorkflowStatus.ENVIADO_CLINICA: return 'bg-blue-50 text-blue-800 border-blue-200';
+      case WorkflowStatus.PLANO_CERA: return 'bg-slate-100 text-slate-700 border-slate-200';
+      case WorkflowStatus.MOLDEIRA_INDIVIDUAL: return 'bg-blue-50 text-blue-800 border-blue-200';
+      case WorkflowStatus.MONTAGEM_DENTES: return 'bg-amber-50 text-amber-800 border-amber-200';
+      case WorkflowStatus.REMONTAR_DENTES: return 'bg-red-50 text-red-800 border-red-200';
+      case WorkflowStatus.ACRILIZAR: return 'bg-purple-50 text-purple-800 border-purple-200';
+      case WorkflowStatus.FINALIZADO: return 'bg-emerald-100 text-emerald-800 border-emerald-200';
       default: return 'bg-slate-100 text-slate-700 border-slate-200';
     }
   };
 
   const getStatusIcon = (status: WorkflowStatus) => {
     switch (status) {
-        case WorkflowStatus.ENTRADA: return <Package size={12} />;
-        case WorkflowStatus.EM_PRODUCAO: return <Activity size={12} />;
-        case WorkflowStatus.ENVIADO_CLINICA: return <Send size={12} />;
-        case WorkflowStatus.REENVIO_CLINICA: return <Send size={12} />;
-        case WorkflowStatus.RETORNO_AJUSTE: return <RotateCcw size={12} />;
-        case WorkflowStatus.CONCLUIDO: return <CheckCircle2 size={12} />;
+        case WorkflowStatus.PLANO_CERA: return <Layers size={12} />;
+        case WorkflowStatus.MOLDEIRA_INDIVIDUAL: return <CircleDot size={12} />;
+        case WorkflowStatus.MONTAGEM_DENTES: return <Smile size={12} />;
+        case WorkflowStatus.REMONTAR_DENTES: return <RotateCcw size={12} />;
+        case WorkflowStatus.ACRILIZAR: return <FlaskConical size={12} />;
+        case WorkflowStatus.FINALIZADO: return <CheckCircle2 size={12} />;
         default: return <Clock size={12} />;
     }
   };
@@ -100,9 +102,9 @@ const PatientWorkflow: React.FC<PatientWorkflowProps> = ({ patient, isOpen, onCl
                       <Activity size={14} className="text-teal-600" /> Nova Movimentação
                     </h3>
                     
-                    {patient.currentStatus === WorkflowStatus.CONCLUIDO ? (
+                    {patient.currentStatus === WorkflowStatus.FINALIZADO ? (
                         <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100 flex items-center gap-1">
-                            <CheckCircle2 size={10} /> Concluído
+                            <CheckCircle2 size={10} /> Finalizado
                         </span>
                     ) : (
                         <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-100 flex items-center gap-1">
@@ -129,7 +131,7 @@ const PatientWorkflow: React.FC<PatientWorkflowProps> = ({ patient, isOpen, onCl
                       <textarea 
                         className={inputClassName}
                         rows={2}
-                        placeholder="Ex: Cerâmica aplicada..."
+                        placeholder="Ex: Cor A2, anatomia detalhada..."
                         value={newNotes}
                         onChange={(e) => setNewNotes(e.target.value)}
                       ></textarea>

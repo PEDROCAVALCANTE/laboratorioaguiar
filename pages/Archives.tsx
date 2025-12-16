@@ -97,16 +97,20 @@ const Archives: React.FC<ArchivesProps> = ({ patients, onDataUpdate }) => {
 
           // Tratamento de Status
           const statusRaw = statusIdx > -1 ? cols[statusIdx].toLowerCase() : '';
-          let currentStatus = WorkflowStatus.ENTRADA;
+          let currentStatus = WorkflowStatus.PLANO_CERA; // Padrão
           let isActive = true;
 
-          if (statusRaw.includes('conclu') || statusRaw.includes('entregue') || statusRaw.includes('pronto')) {
-            currentStatus = WorkflowStatus.CONCLUIDO;
-            isActive = false; // Define como inativo se já estiver concluído
-          } else if (statusRaw.includes('produ') || statusRaw.includes('andamento')) {
-            currentStatus = WorkflowStatus.EM_PRODUCAO;
-          } else if (statusRaw.includes('provas') || statusRaw.includes('ajuste')) {
-            currentStatus = WorkflowStatus.RETORNO_AJUSTE;
+          if (statusRaw.includes('conclu') || statusRaw.includes('entregue') || statusRaw.includes('pronto') || statusRaw.includes('finalizado')) {
+            currentStatus = WorkflowStatus.FINALIZADO;
+            isActive = false; 
+          } else if (statusRaw.includes('remontar') || statusRaw.includes('ajuste')) {
+            currentStatus = WorkflowStatus.REMONTAR_DENTES;
+          } else if (statusRaw.includes('acrilizar')) {
+            currentStatus = WorkflowStatus.ACRILIZAR;
+          } else if (statusRaw.includes('montagem')) {
+            currentStatus = WorkflowStatus.MONTAGEM_DENTES;
+          } else if (statusRaw.includes('moldeira')) {
+            currentStatus = WorkflowStatus.MOLDEIRA_INDIVIDUAL;
           }
 
           const newPatient: Patient = {
@@ -163,9 +167,9 @@ const Archives: React.FC<ArchivesProps> = ({ patients, onDataUpdate }) => {
 
     // 2. Filtro de Status
     if (statusFilter === 'COMPLETED') {
-      data = data.filter(p => p.currentStatus === WorkflowStatus.CONCLUIDO);
+      data = data.filter(p => p.currentStatus === WorkflowStatus.FINALIZADO);
     } else if (statusFilter === 'ACTIVE') {
-      data = data.filter(p => p.currentStatus !== WorkflowStatus.CONCLUIDO);
+      data = data.filter(p => p.currentStatus !== WorkflowStatus.FINALIZADO);
     }
 
     // 3. Ordenação
@@ -211,12 +215,12 @@ const Archives: React.FC<ArchivesProps> = ({ patients, onDataUpdate }) => {
 
   const getStatusBadge = (status: WorkflowStatus) => {
     const styles = {
-      [WorkflowStatus.ENTRADA]: 'bg-slate-100 text-slate-600',
-      [WorkflowStatus.EM_PRODUCAO]: 'bg-yellow-50 text-yellow-700',
-      [WorkflowStatus.ENVIADO_CLINICA]: 'bg-blue-50 text-blue-700',
-      [WorkflowStatus.RETORNO_AJUSTE]: 'bg-red-50 text-red-700',
-      [WorkflowStatus.REENVIO_CLINICA]: 'bg-purple-50 text-purple-700',
-      [WorkflowStatus.CONCLUIDO]: 'bg-emerald-50 text-emerald-700',
+      [WorkflowStatus.PLANO_CERA]: 'bg-slate-100 text-slate-600',
+      [WorkflowStatus.MOLDEIRA_INDIVIDUAL]: 'bg-blue-50 text-blue-700',
+      [WorkflowStatus.MONTAGEM_DENTES]: 'bg-amber-50 text-amber-700',
+      [WorkflowStatus.REMONTAR_DENTES]: 'bg-red-50 text-red-700',
+      [WorkflowStatus.ACRILIZAR]: 'bg-purple-50 text-purple-700',
+      [WorkflowStatus.FINALIZADO]: 'bg-emerald-50 text-emerald-700',
     };
     return <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${styles[status]}`}>{status}</span>;
   };
@@ -311,7 +315,7 @@ const Archives: React.FC<ArchivesProps> = ({ patients, onDataUpdate }) => {
                         onClick={() => setStatusFilter('COMPLETED')}
                         className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${statusFilter === 'COMPLETED' ? 'bg-emerald-50 text-emerald-700' : 'text-slate-500 hover:text-slate-700'}`}
                     >
-                        Concluídos
+                        Finalizados
                     </button>
                     <button 
                         onClick={() => setStatusFilter('ACTIVE')}

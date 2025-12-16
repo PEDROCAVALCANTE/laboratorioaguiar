@@ -122,11 +122,11 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
         paymentStatus: formData.paymentStatus as PaymentStatus,
         workflowHistory: [{
           id: 'initial', 
-          status: WorkflowStatus.ENTRADA, 
+          status: WorkflowStatus.PLANO_CERA, 
           date: new Date().toISOString(), 
           notes: 'Cadastro inicial'
         }],
-        currentStatus: WorkflowStatus.ENTRADA,
+        currentStatus: WorkflowStatus.PLANO_CERA,
         isActive: true
       };
       onAddPatient(newPatient);
@@ -179,12 +179,12 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
 
   const getStatusBadge = (status: WorkflowStatus) => {
     const styles = {
-      [WorkflowStatus.ENTRADA]: 'bg-slate-100 text-slate-700 border-slate-200',
-      [WorkflowStatus.EM_PRODUCAO]: 'bg-blue-50 text-blue-700 border-blue-100',
-      [WorkflowStatus.ENVIADO_CLINICA]: 'bg-indigo-50 text-indigo-700 border-indigo-100',
-      [WorkflowStatus.RETORNO_AJUSTE]: 'bg-red-50 text-red-700 border-red-100',
-      [WorkflowStatus.REENVIO_CLINICA]: 'bg-purple-50 text-purple-700 border-purple-100',
-      [WorkflowStatus.CONCLUIDO]: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+      [WorkflowStatus.PLANO_CERA]: 'bg-slate-100 text-slate-700 border-slate-200',
+      [WorkflowStatus.MOLDEIRA_INDIVIDUAL]: 'bg-blue-50 text-blue-700 border-blue-100',
+      [WorkflowStatus.MONTAGEM_DENTES]: 'bg-amber-50 text-amber-700 border-amber-100',
+      [WorkflowStatus.REMONTAR_DENTES]: 'bg-red-50 text-red-700 border-red-100',
+      [WorkflowStatus.ACRILIZAR]: 'bg-purple-50 text-purple-700 border-purple-100',
+      [WorkflowStatus.FINALIZADO]: 'bg-emerald-50 text-emerald-700 border-emerald-100',
     };
     return <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${styles[status]}`}>{status}</span>;
   };
@@ -237,7 +237,7 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
           >
             <option value="ALL">Todos os Status</option>
             <option value="ACTIVE">Em Aberto</option>
-            <option value="COMPLETED">Concluídos</option>
+            <option value="COMPLETED">Finalizados</option>
           </select>
         </div>
       </div>
@@ -280,7 +280,7 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
 
               {/* Actions - Smaller */}
               <div className="flex md:flex-col justify-end items-end gap-1.5 border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 md:pl-3">
-                {patient.currentStatus === WorkflowStatus.CONCLUIDO && (
+                {patient.currentStatus === WorkflowStatus.FINALIZADO && (
                     <button 
                         onClick={(e) => {
                             e.stopPropagation();
