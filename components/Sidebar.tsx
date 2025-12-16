@@ -44,8 +44,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
         </div>
 
         {/* Logo Section */}
-        <div className="p-6 border-b border-slate-50 flex flex-col items-center justify-center">
-            <div className="w-full h-24 flex items-center justify-center p-2">
+        <div className="p-4 border-b border-slate-50 flex flex-col items-center justify-center">
+            <div className="w-full h-40 flex items-center justify-center">
                 <img 
                 src="https://iili.io/fYtBdqF.png" 
                 alt="Aguiar Prótese Dentária" 
