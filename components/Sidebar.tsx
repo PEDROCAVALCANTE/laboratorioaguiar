@@ -92,6 +92,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
              <div className="flex items-center gap-1.5 mb-1">
                 <ShieldCheck size={12} className="text-blue-500" />
                 <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Licenciado</span>
+                <span className="text-[10px] font-bold text-emerald-600">R$ 89,99</span>
              </div>
              <span className="text-[10px] font-medium text-slate-400">Vencimento: Dia 16</span>
           </div>
