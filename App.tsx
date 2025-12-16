@@ -270,7 +270,7 @@ const App: React.FC = () => {
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-40 flex items-center justify-between px-4 shadow-sm">
         <div className="flex items-center gap-3">
             <div className="h-8 w-8 bg-blue-50 rounded-lg flex items-center justify-center">
-              <img src="https://iili.io/fYtBdqF.png" alt="Logo" className="h-5 w-auto object-contain" />
+              <img src="https://iili.io/fcoadnn.png" alt="Logo" className="h-5 w-auto object-contain" />
             </div>
             <span className="font-bold text-slate-800 text-sm">Aguiar Prótese</span>
         </div>

@@ -37,7 +37,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
            {/* Logo reduzida (h-14) e margens menores */}
            <div className="w-36 h-14 flex items-center justify-center mb-2">
                 <img 
-                src="https://iili.io/fYtBdqF.png" 
+                src="https://iili.io/fcoadnn.png" 
                 alt="Aguiar Prótese Dentária" 
                 className="w-full h-full object-contain drop-shadow-sm" 
                 />

@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
         <div className="pt-8 pb-8 px-8 flex flex-col items-center justify-center border-b border-slate-50/50">
             <div className="w-40 h-16 flex items-center justify-center mb-4 transition-transform hover:scale-105 duration-300">
                 <img 
-                src="https://iili.io/fYtBdqF.png" 
+                src="https://iili.io/fcoadnn.png" 
                 alt="Aguiar Prótese Dentária" 
                 className="w-full h-full object-contain drop-shadow-sm" 
                 />
