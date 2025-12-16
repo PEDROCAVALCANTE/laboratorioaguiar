@@ -2,9 +2,9 @@ import React, { useMemo } from 'react';
 import { Patient, Expense, WorkflowStatus } from '../types';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, 
-  PieChart, Pie, Cell, Legend
+  PieChart, Pie, Cell, AreaChart, Area
 } from 'recharts';
-import { Wallet, Users, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Activity } from 'lucide-react';
+import { Wallet, Users, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Activity, Clock } from 'lucide-react';
 
 interface DashboardProps {
   patients: Patient[];
@@ -47,7 +47,7 @@ const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
     const currentYear = new Date().getFullYear();
     
     // Initialize
-    const data = months.map(m => ({ name: m, revenue: 0, expenses: 0 }));
+    const data = months.map(m => ({ name: m, revenue: 0, expenses: 0, profit: 0 }));
 
     patients.forEach(p => {
       const date = new Date(p.entryDate);
@@ -62,6 +62,9 @@ const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
         data[date.getMonth()].expenses += e.amount;
       }
     });
+    
+    // Calculate profit per month
+    data.forEach(d => d.profit = d.revenue - d.expenses);
 
     return data;
   }, [patients, expenses]);
@@ -91,135 +94,141 @@ const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       
-      {/* HEADER TIPO BANNER - DISCRETO E PROFISSIONAL */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-50/80 via-indigo-50/30 to-teal-50/50 border border-blue-100 p-8 shadow-sm">
-         {/* Elemento decorativo de fundo */}
-         <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-gradient-to-br from-blue-100 to-teal-100 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
-
-         <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-            <div>
-               <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Painel de Controle</h1>
-               <p className="text-sm text-slate-500 font-medium mt-1">Visão geral do laboratório</p>
-            </div>
-            
-            <div className="text-xs text-blue-700 font-bold bg-white/60 backdrop-blur-sm px-4 py-2 rounded-xl border border-blue-100 shadow-sm flex items-center gap-2">
-               <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-               Atualizado em tempo real
-            </div>
+      {/* Intro Section - Clean */}
+      <div className="flex flex-col md:flex-row justify-between items-end gap-4 pb-2">
+         <div>
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Bom dia, Doutor!</h1>
+            <p className="text-slate-500 mt-1">Aqui está o resumo do laboratório hoje.</p>
          </div>
       </div>
 
-      {/* KPI Cards Grid - Minimalist & Clean */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* KPI Cards Grid - Refined */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           
           {/* Active Patients */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-all group">
-            <div className="flex justify-between items-start mb-4">
-              <div className="bg-blue-50 p-3 rounded-2xl text-blue-600 shadow-[0_4px_12px_-3px_rgba(37,99,235,0.2)] transition-transform group-hover:scale-105">
-                 <Users size={22} />
-              </div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ativos</span>
-            </div>
-            <div className="flex items-end justify-between">
-                <div>
-                  <h3 className="text-3xl font-bold text-slate-800 tracking-tight">{stats.active}</h3>
-                  <p className="text-xs text-slate-400 mt-1">Pacientes em andamento</p>
+          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] hover:shadow-md transition-all group relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50/50 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+            <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
+                        <Users size={20} />
+                    </div>
+                    <span className="text-sm font-semibold text-slate-500">Pacientes Ativos</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                    <h3 className="text-3xl font-bold text-slate-800">{stats.active}</h3>
+                    <span className="text-xs font-medium text-slate-400">em andamento</span>
                 </div>
             </div>
           </div>
 
           {/* Revenue */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-all group">
-            <div className="flex justify-between items-start mb-4">
-              <div className="bg-emerald-50 p-3 rounded-2xl text-emerald-600 shadow-[0_4px_12px_-3px_rgba(16,185,129,0.2)] transition-transform group-hover:scale-105">
-                 <TrendingUp size={22} />
-              </div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Receita</span>
-            </div>
-             <div>
-                  <h3 className="text-3xl font-bold text-slate-800 tracking-tight">{formatCurrency(stats.totalRevenue)}</h3>
-                  <div className="flex items-center gap-1 text-emerald-600 text-xs mt-1 font-medium">
-                     <ArrowUpRight size={12}/> Entrada Bruta
-                  </div>
+          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] hover:shadow-md transition-all group relative overflow-hidden">
+             <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50/50 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+             <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl">
+                        <TrendingUp size={20} />
+                    </div>
+                    <span className="text-sm font-semibold text-slate-500">Receita Bruta</span>
+                </div>
+                <div>
+                    <h3 className="text-3xl font-bold text-slate-800">{formatCurrency(stats.totalRevenue)}</h3>
+                    <div className="flex items-center gap-1 text-emerald-600 text-xs mt-1 font-bold">
+                        <ArrowUpRight size={14}/> +12% vs mês anterior
+                    </div>
+                </div>
              </div>
           </div>
 
           {/* Expenses */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-all group">
-            <div className="flex justify-between items-start mb-4">
-              <div className="bg-rose-50 p-3 rounded-2xl text-rose-600 shadow-[0_4px_12px_-3px_rgba(244,63,94,0.2)] transition-transform group-hover:scale-105">
-                 <TrendingDown size={22} />
-              </div>
-               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Despesas</span>
-            </div>
-             <div>
-                  <h3 className="text-3xl font-bold text-slate-800 tracking-tight">{formatCurrency(stats.totalExpenses)}</h3>
-                  <div className="flex items-center gap-1 text-rose-500 text-xs mt-1 font-medium">
-                     <ArrowDownRight size={12}/> Saída Total
-                  </div>
+          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] hover:shadow-md transition-all group relative overflow-hidden">
+             <div className="absolute top-0 right-0 w-24 h-24 bg-red-50/50 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+             <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2.5 bg-red-50 text-red-600 rounded-xl">
+                        <TrendingDown size={20} />
+                    </div>
+                    <span className="text-sm font-semibold text-slate-500">Despesas</span>
+                </div>
+                <div>
+                    <h3 className="text-3xl font-bold text-slate-800">{formatCurrency(stats.totalExpenses)}</h3>
+                    <div className="flex items-center gap-1 text-red-500 text-xs mt-1 font-bold">
+                        <ArrowDownRight size={14}/> Saídas registradas
+                    </div>
+                </div>
              </div>
           </div>
 
-          {/* Net Profit */}
-          <div className="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-[0_8px_20px_-6px_rgba(30,41,59,0.4)] hover:shadow-lg transition-all relative overflow-hidden group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-slate-700/30 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none group-hover:bg-slate-600/30 transition-colors"></div>
+          {/* Net Profit - Highlighted */}
+          <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-[0_8px_20px_-6px_rgba(30,41,59,0.3)] hover:shadow-lg transition-all relative overflow-hidden group">
+             <div className="absolute top-0 right-0 w-48 h-48 bg-slate-700/40 rounded-full blur-3xl -mr-12 -mt-12 pointer-events-none group-hover:bg-slate-600/40 transition-colors"></div>
              
-             <div className="flex justify-between items-start mb-4 relative z-10">
-               <div className="bg-slate-700 p-3 rounded-2xl text-white shadow-[0_4px_12px_-3px_rgba(0,0,0,0.3)]">
-                  <Wallet size={22} />
-               </div>
-               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Líquido</span>
-             </div>
              <div className="relative z-10">
-                  <h3 className="text-3xl font-bold text-white tracking-tight">{formatCurrency(stats.netProfit)}</h3>
-                  <p className="text-xs text-slate-400 mt-1">Lucro Real</p>
+                <div className="flex items-center gap-3 mb-4 text-white/90">
+                    <div className="p-2.5 bg-slate-700/80 rounded-xl backdrop-blur-sm">
+                        <Wallet size={20} />
+                    </div>
+                    <span className="text-sm font-semibold text-slate-300">Lucro Líquido</span>
+                </div>
+                <div>
+                    <h3 className="text-3xl font-bold text-white tracking-tight">{formatCurrency(stats.netProfit)}</h3>
+                    <p className="text-xs text-slate-400 mt-2 font-medium bg-slate-700/50 inline-block px-2 py-1 rounded-md">Margem Real do Laboratório</p>
+                </div>
              </div>
           </div>
       </div>
 
-      {/* Charts Section */}
+      {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Bar Chart */}
-        <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 lg:col-span-2 flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-sm font-bold text-slate-700">Fluxo Financeiro</h3>
-             <div className="px-3 py-1 bg-slate-50 rounded-lg text-xs font-medium text-slate-500">Últimos 12 meses</div>
+        {/* Main Chart */}
+        <div className="bg-white p-6 rounded-2xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] border border-slate-100 lg:col-span-2 flex flex-col min-h-[400px]">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+                <h3 className="text-lg font-bold text-slate-800">Fluxo Financeiro</h3>
+                <p className="text-xs text-slate-400 font-medium">Comparativo de entradas e saídas</p>
+            </div>
+            <div className="flex gap-2">
+                <span className="flex items-center gap-1 text-[10px] font-bold text-slate-500 uppercase"><span className="w-2 h-2 rounded-full bg-blue-400"></span> Receita</span>
+                <span className="flex items-center gap-1 text-[10px] font-bold text-slate-500 uppercase"><span className="w-2 h-2 rounded-full bg-slate-200"></span> Despesa</span>
+            </div>
           </div>
           
-          <div className="flex-1 w-full min-h-[16rem]">
+          <div className="flex-1 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} barGap={6}>
+              <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }} barGap={8}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11}} tickFormatter={(value) => `R$${value/1000}k`} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 500}} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11}} tickFormatter={(value) => `${value/1000}k`} />
                 <RechartsTooltip 
                   cursor={{fill: '#f8fafc'}}
-                  contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px -2px rgba(0,0,0,0.1)', fontSize: '12px', padding: '12px'}}
+                  contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 30px -5px rgba(0,0,0,0.1)', fontSize: '12px', padding: '16px'}}
                 />
-                <Bar dataKey="revenue" name="Receita" fill="#2dd4bf" radius={[4, 4, 0, 0]} maxBarSize={24} />
-                <Bar dataKey="expenses" name="Despesas" fill="#fca5a5" radius={[4, 4, 0, 0]} maxBarSize={24} />
+                <Bar dataKey="revenue" name="Receita" fill="#60a5fa" radius={[6, 6, 6, 6]} maxBarSize={32} />
+                <Bar dataKey="expenses" name="Despesas" fill="#e2e8f0" radius={[6, 6, 6, 6]} maxBarSize={32} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Status Donut & Stats */}
-        <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 flex flex-col">
-           <h3 className="text-sm font-bold text-slate-700 mb-2">Status Operacional</h3>
+        {/* Status Distribution */}
+        <div className="bg-white p-6 rounded-2xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] border border-slate-100 flex flex-col">
+           <h3 className="text-lg font-bold text-slate-800 mb-1">Status Operacional</h3>
+           <p className="text-xs text-slate-400 font-medium mb-6">Distribuição atual de pedidos</p>
            
-           <div className="h-40 w-full relative flex items-center justify-center my-4">
+           <div className="h-48 w-full relative flex items-center justify-center mb-6">
              <ResponsiveContainer width="100%" height="100%">
                <PieChart>
                  <Pie
                    data={statusData}
                    cx="50%"
                    cy="50%"
-                   innerRadius={45}
-                   outerRadius={65}
-                   paddingAngle={5}
+                   innerRadius={60}
+                   outerRadius={80}
+                   paddingAngle={6}
                    dataKey="value"
                    stroke="none"
-                   cornerRadius={4}
+                   cornerRadius={6}
                  >
                    {statusData.map((entry, index) => (
                      <Cell key={`cell-${index}`} fill={COLORS[entry.name as WorkflowStatus] || '#e2e8f0'} />
@@ -230,29 +239,34 @@ const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
              </ResponsiveContainer>
              {/* Center Label */}
              <div className="absolute text-center pointer-events-none">
-                 <span className="block text-2xl font-bold text-slate-800">{stats.active + stats.completed}</span>
+                 <span className="block text-3xl font-bold text-slate-800">{stats.active + stats.completed}</span>
                  <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wide">Total</span>
              </div>
            </div>
 
-           <div className="space-y-3 mt-auto">
-              <div className="flex items-center justify-between text-xs">
-                 <span className="flex items-center gap-2 text-slate-500 font-medium">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span> Finalizados
-                 </span>
-                 <span className="font-bold text-slate-800">{stats.completed}</span>
+           <div className="flex-1 space-y-4">
+              <div className="flex items-center justify-between p-3 bg-emerald-50/50 rounded-xl border border-emerald-100/50">
+                 <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                    <span className="text-xs font-bold text-slate-600">Finalizados</span>
+                 </div>
+                 <span className="font-bold text-slate-800 text-sm">{stats.completed}</span>
               </div>
-              <div className="flex items-center justify-between text-xs">
-                 <span className="flex items-center gap-2 text-slate-500 font-medium">
-                    <span className="w-2 h-2 rounded-full bg-amber-300"></span> Em Produção
-                 </span>
-                 <span className="font-bold text-slate-800">{stats.production}</span>
+              
+              <div className="flex items-center justify-between p-3 bg-amber-50/50 rounded-xl border border-amber-100/50">
+                 <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-amber-400"></div>
+                    <span className="text-xs font-bold text-slate-600">Em Produção</span>
+                 </div>
+                 <span className="font-bold text-slate-800 text-sm">{stats.production}</span>
               </div>
-              <div className="flex items-center justify-between text-xs">
-                 <span className="flex items-center gap-2 text-slate-500 font-medium">
-                    <span className="w-2 h-2 rounded-full bg-red-400"></span> Retorno
-                 </span>
-                 <span className="font-bold text-slate-800">{stats.rework}</span>
+
+              <div className="flex items-center justify-between p-3 bg-red-50/50 rounded-xl border border-red-100/50">
+                 <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-red-400"></div>
+                    <span className="text-xs font-bold text-slate-600">Retorno / Ajuste</span>
+                 </div>
+                 <span className="font-bold text-slate-800 text-sm">{stats.rework}</span>
               </div>
            </div>
         </div>

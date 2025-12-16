@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Patient, WorkflowStatus, PaymentStatus, Clinic, ServiceItem } from '../types';
-import { Plus, Search, Filter, Calendar, DollarSign, User, AlertCircle, Edit2, Trash2, FileText, ChevronRight, CheckCircle, Printer, X, Briefcase } from 'lucide-react';
+import { Plus, Search, Filter, Calendar, DollarSign, User, AlertCircle, Edit2, Trash2, FileText, ChevronRight, CheckCircle, Printer, X, Briefcase, MoreHorizontal } from 'lucide-react';
 import PatientWorkflow from './PatientWorkflow';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import { ptBR } from 'date-fns/locale';
@@ -52,8 +52,8 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
   const [formData, setFormData] = useState<Partial<Patient>>(initialFormState);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Minimalist Inputs
-  const inputClassName = "w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 focus:border-teal-400 transition-all placeholder:text-slate-400";
+  // Clean Inputs
+  const inputClassName = "w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all placeholder:text-slate-400 hover:border-slate-300";
   const labelClassName = "block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5 ml-1";
 
   const filteredPatients = patients.filter(p => {
@@ -84,7 +84,6 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // (Logic identical to previous implementation)
     if (isEditing && formData.id) {
        const original = patients.find(p => p.id === formData.id);
        if (!original) return;
@@ -167,15 +166,15 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
 
   const getStatusBadge = (status: WorkflowStatus) => {
     const styles = {
-      [WorkflowStatus.PLANO_CERA]: 'bg-slate-100 text-slate-600 ring-slate-200',
-      [WorkflowStatus.MOLDEIRA_INDIVIDUAL]: 'bg-blue-50 text-blue-700 ring-blue-200',
-      [WorkflowStatus.MONTAGEM_DENTES]: 'bg-amber-50 text-amber-700 ring-amber-200',
-      [WorkflowStatus.REMONTAR_DENTES]: 'bg-red-50 text-red-700 ring-red-200',
-      [WorkflowStatus.ACRILIZAR]: 'bg-indigo-50 text-indigo-700 ring-indigo-200',
-      [WorkflowStatus.FINALIZADO]: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+      [WorkflowStatus.PLANO_CERA]: 'bg-slate-100 text-slate-600',
+      [WorkflowStatus.MOLDEIRA_INDIVIDUAL]: 'bg-blue-50 text-blue-700',
+      [WorkflowStatus.MONTAGEM_DENTES]: 'bg-amber-50 text-amber-700',
+      [WorkflowStatus.REMONTAR_DENTES]: 'bg-red-50 text-red-700',
+      [WorkflowStatus.ACRILIZAR]: 'bg-indigo-50 text-indigo-700',
+      [WorkflowStatus.FINALIZADO]: 'bg-emerald-50 text-emerald-700',
     };
     return (
-        <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide ring-1 ring-inset ${styles[status]}`}>
+        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border border-transparent ${styles[status]}`}>
             {status}
         </span>
     );
@@ -202,24 +201,24 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Pacientes</h1>
-           <p className="text-sm text-slate-500 font-light">Gerencie ordens de serviço e status</p>
+           <p className="text-sm text-slate-500 font-light mt-1">Gerencie ordens de serviço e status</p>
         </div>
         <button 
           onClick={() => handleOpenForm()}
-          className="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-xl transition-all shadow-sm shadow-teal-200 flex items-center gap-2 text-sm font-semibold"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all shadow-md shadow-blue-200 flex items-center gap-2 text-sm font-semibold active:scale-95"
         >
           <Plus size={18} /> Novo Paciente
         </button>
       </div>
 
-      {/* Filter Bar - Clean White Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 bg-white p-1.5 rounded-xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.05)] border border-slate-100">
+      {/* Filter Bar */}
+      <div className="flex flex-col sm:flex-row gap-3 bg-white p-2 rounded-2xl shadow-sm border border-slate-200/60">
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-3 text-slate-400" size={18} />
+          <Search className="absolute left-3.5 top-2.5 text-slate-400" size={18} />
           <input 
             type="text" 
             placeholder="Buscar por nome, clínica ou dentista..." 
-            className="w-full pl-10 pr-4 py-2.5 bg-transparent rounded-lg text-sm outline-none text-slate-700 placeholder:text-slate-400"
+            className="w-full pl-10 pr-4 py-2 bg-transparent rounded-lg text-sm outline-none text-slate-700 placeholder:text-slate-400 font-medium"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -228,7 +227,7 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
         <div className="flex items-center gap-2 px-2">
           <Filter className="text-slate-400" size={16} />
           <select 
-            className="p-2 bg-transparent text-sm font-medium text-slate-600 outline-none cursor-pointer hover:text-slate-800"
+            className="p-2 bg-transparent text-sm font-bold text-slate-600 outline-none cursor-pointer hover:text-slate-800"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
           >
@@ -239,53 +238,48 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
         </div>
       </div>
 
-      {/* Patient List - Minimal Cards */}
-      <div className="grid grid-cols-1 gap-4">
+      {/* Patient List */}
+      <div className="grid grid-cols-1 gap-3">
         {filteredPatients.map(patient => (
           <div 
              key={patient.id} 
              onClick={() => openWorkflow(patient)}
-             className="bg-white rounded-xl p-5 border border-slate-100 shadow-sm hover:shadow-md hover:border-teal-100 transition-all cursor-pointer group"
+             className="bg-white rounded-xl p-5 border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:shadow-md hover:border-blue-100 transition-all cursor-pointer group relative"
           >
-            <div className="flex flex-col md:flex-row justify-between gap-4">
+            <div className="flex flex-col md:flex-row justify-between gap-4 items-center">
+               
+               {/* Avatar Placeholder */}
+               <div className="hidden md:flex flex-shrink-0 w-12 h-12 rounded-full bg-slate-50 items-center justify-center text-slate-400 font-bold border border-slate-100 group-hover:bg-blue-50 group-hover:text-blue-500 transition-colors">
+                  {patient.name.charAt(0).toUpperCase()}
+               </div>
+
                {/* Left: Main Info */}
-               <div className="flex-1 space-y-3">
-                  <div className="flex items-center justify-between md:justify-start gap-3">
-                     <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 transition-colors">{patient.name}</h3>
-                     {getStatusBadge(patient.currentStatus)}
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-500">
-                      <div className="flex items-center gap-1.5">
-                         <Briefcase size={14} className="text-slate-300" />
-                         <span className="font-medium text-slate-600">{patient.clinic}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                         <User size={14} className="text-slate-300" />
-                         <span>{patient.doctorName}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                         <Calendar size={14} className="text-slate-300" />
-                         <span>Entrada: {new Date(patient.entryDate).toLocaleDateString()}</span>
-                      </div>
-                  </div>
-                  
-                  <div className="pt-2 border-t border-slate-50 mt-1 flex items-center justify-between md:justify-start gap-6">
-                      <div className="text-xs text-slate-400">
-                          Prótese: <span className="text-slate-700 font-medium">{patient.prosthesisType}</span>
-                      </div>
-                      <div className="text-xs text-slate-400">
-                          Valor: <span className="text-teal-600 font-bold">R$ {patient.serviceValue.toFixed(2)}</span>
-                      </div>
+               <div className="flex-1 w-full md:w-auto space-y-1 text-center md:text-left">
+                  <h3 className="text-base font-bold text-slate-800 group-hover:text-blue-700 transition-colors">{patient.name}</h3>
+                  <div className="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-1 text-xs text-slate-500">
+                      <span className="flex items-center gap-1.5"><Briefcase size={12}/> {patient.clinic}</span>
+                      <span className="flex items-center gap-1.5"><User size={12}/> {patient.doctorName}</span>
+                      <span className="flex items-center gap-1.5"><Calendar size={12}/> {new Date(patient.entryDate).toLocaleDateString()}</span>
                   </div>
                </div>
 
+               {/* Middle: Work Info */}
+               <div className="flex flex-col items-center md:items-start w-full md:w-1/4 gap-1">
+                   <div className="text-xs font-semibold text-slate-700">{patient.prosthesisType}</div>
+                   <div className="text-xs font-bold text-blue-600">R$ {patient.serviceValue.toFixed(2)}</div>
+               </div>
+
+               {/* Status Badge */}
+               <div className="w-full md:w-auto flex justify-center">
+                  {getStatusBadge(patient.currentStatus)}
+               </div>
+
                {/* Right: Actions */}
-               <div className="flex md:flex-col justify-end items-center gap-2 pl-0 md:pl-4 md:border-l border-slate-50">
+               <div className="flex gap-1 md:pl-4 md:border-l border-slate-50 pt-3 md:pt-0 w-full md:w-auto justify-center">
                   {patient.currentStatus === WorkflowStatus.FINALIZADO && (
                       <button 
                           onClick={(e) => { e.stopPropagation(); setGuidePatient(patient); }}
-                          className="p-2 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition"
+                          className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition"
                           title="Imprimir Guia"
                       >
                           <Printer size={18} />
@@ -311,32 +305,36 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
         ))}
         
         {filteredPatients.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-xl border border-dashed border-slate-200">
-            <p className="text-slate-400 text-sm">Nenhum paciente encontrado com esses filtros.</p>
+          <div className="text-center py-16 bg-white rounded-xl border border-dashed border-slate-200">
+            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+               <Search size={24} />
+            </div>
+            <p className="text-slate-500 font-medium">Nenhum paciente encontrado</p>
+            <p className="text-slate-400 text-xs mt-1">Tente ajustar seus filtros de busca</p>
           </div>
         )}
       </div>
 
-      {/* MODAL - Minimalist & Clean */}
+      {/* MODAL */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200 overflow-hidden">
             
-            <div className="px-6 py-4 border-b border-slate-50 flex justify-between items-center bg-white">
+            <div className="px-6 py-5 border-b border-slate-50 flex justify-between items-center bg-white">
               <h3 className="text-lg font-bold text-slate-800">{isEditing ? 'Editar Paciente' : 'Novo Paciente'}</h3>
               <button onClick={() => setIsFormOpen(false)} className="text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-50 transition"><X size={20} /></button>
             </div>
 
-            <div className="flex border-b border-slate-50">
-                <button type="button" onClick={() => setActiveModalTab('info')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeModalTab === 'info' ? 'text-teal-600 border-teal-500' : 'text-slate-400 border-transparent hover:text-slate-600'}`}>Dados</button>
-                <button type="button" onClick={() => setActiveModalTab('services')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeModalTab === 'services' ? 'text-teal-600 border-teal-500' : 'text-slate-400 border-transparent hover:text-slate-600'}`}>Serviços</button>
+            <div className="flex border-b border-slate-100 bg-slate-50/50">
+                <button type="button" onClick={() => setActiveModalTab('info')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeModalTab === 'info' ? 'text-blue-600 border-blue-500 bg-white' : 'text-slate-400 border-transparent hover:text-slate-600'}`}>Dados</button>
+                <button type="button" onClick={() => setActiveModalTab('services')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeModalTab === 'services' ? 'text-blue-600 border-blue-500 bg-white' : 'text-slate-400 border-transparent hover:text-slate-600'}`}>Serviços</button>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 bg-white">
+            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 bg-white">
               <div className="space-y-6">
                 
                 {/* Info Tab */}
-                <div className={activeModalTab === 'info' ? 'block space-y-5 animate-in fade-in slide-in-from-left-2 duration-200' : 'hidden'}>
+                <div className={activeModalTab === 'info' ? 'block space-y-6 animate-in fade-in slide-in-from-left-2 duration-200' : 'hidden'}>
                     <div>
                         <label className={labelClassName}>Nome do Paciente</label>
                         <input required={activeModalTab === 'info'} type="text" className={inputClassName} value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Nome completo" />
@@ -360,12 +358,12 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
                     </div>
                     
                     <div className="flex justify-end pt-2">
-                         <button type="button" onClick={() => setActiveModalTab('services')} className="text-teal-600 text-sm font-semibold hover:bg-teal-50 px-4 py-2 rounded-lg transition flex items-center gap-1">Próximo <ChevronRight size={16} /></button>
+                         <button type="button" onClick={() => setActiveModalTab('services')} className="text-blue-600 text-sm font-semibold hover:bg-blue-50 px-4 py-2 rounded-lg transition flex items-center gap-1">Próximo <ChevronRight size={16} /></button>
                     </div>
                 </div>
 
                 {/* Services Tab */}
-                <div className={activeModalTab === 'services' ? 'block space-y-5 animate-in fade-in slide-in-from-right-2 duration-200' : 'hidden'}>
+                <div className={activeModalTab === 'services' ? 'block space-y-6 animate-in fade-in slide-in-from-right-2 duration-200' : 'hidden'}>
                      <div>
                         <label className={labelClassName}>Tipo de Prótese</label>
                         <input required={activeModalTab === 'services'} type="text" list="service-catalog" className={inputClassName} value={formData.prosthesisType} onChange={handleProsthesisTypeChange} placeholder="Selecione..." />
@@ -407,7 +405,7 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
                 </div>
               </div>
 
-              <div className="pt-6 mt-6 border-t border-slate-50 flex justify-end gap-3">
+              <div className="pt-6 mt-8 border-t border-slate-50 flex justify-end gap-3">
                  {showSuccess ? (
                    <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2.5 rounded-xl font-medium text-sm animate-in fade-in">
                      <CheckCircle size={18} /> Salvo!
@@ -415,7 +413,7 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
                  ) : (
                    <>
                      <button type="button" onClick={() => setIsFormOpen(false)} className="px-5 py-2.5 text-sm text-slate-600 hover:bg-slate-50 rounded-xl font-medium transition">Cancelar</button>
-                     <button type="submit" className="px-6 py-2.5 text-sm bg-slate-800 text-white rounded-xl hover:bg-slate-900 font-medium shadow-lg shadow-slate-200 transition-all transform active:scale-95">Salvar Paciente</button>
+                     <button type="submit" className="px-6 py-2.5 text-sm bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-bold shadow-lg shadow-blue-200 transition-all transform active:scale-95">Salvar Paciente</button>
                    </>
                  )}
               </div>
@@ -443,14 +441,13 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
         </div>
       )}
 
-      {/* Guide Modal (Hidden Logic reused) */}
+      {/* Guide Modal Reuse */}
       {guidePatient && (
           <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-in fade-in">
-             {/* ... (Print Modal Logic - Keeping structure but ensuring clean background) ... */}
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl flex flex-col h-[90vh]">
                <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-xl">
                   <h3 className="font-bold text-slate-800 flex items-center gap-2 text-sm">
-                    <Printer size={18} className="text-teal-600"/> Guia de Fechamento
+                    <Printer size={18} className="text-blue-600"/> Guia de Fechamento
                   </h3>
                   <div className="flex gap-2">
                      <button onClick={handlePrint} className="px-3 py-1.5 bg-slate-800 text-white rounded-lg text-xs font-bold hover:bg-slate-900">Imprimir</button>
@@ -458,10 +455,9 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
                   </div>
                </div>
                <div className="flex-1 overflow-y-auto p-8 bg-slate-100">
-                   {/* Print Content Container */}
                    <div ref={printRef} className="bg-white p-12 max-w-2xl mx-auto shadow-sm min-h-[800px] flex flex-col relative text-slate-900">
                       <div className="flex items-center justify-center mb-10"><div className="w-40 h-32 flex items-center justify-center"><img src="https://iili.io/fYtBdqF.png" alt="Logo" className="w-full h-full object-contain"/></div></div>
-                      <div className="text-center mb-10"><h2 className="text-2xl font-bold text-slate-800 border-b-2 border-teal-100 inline-block px-6 pb-2">{guidePatient.doctorName}</h2><p className="text-sm text-slate-500 mt-2 font-medium">{guidePatient.clinic}</p></div>
+                      <div className="text-center mb-10"><h2 className="text-2xl font-bold text-slate-800 border-b-2 border-blue-100 inline-block px-6 pb-2">{guidePatient.doctorName}</h2><p className="text-sm text-slate-500 mt-2 font-medium">{guidePatient.clinic}</p></div>
                       <div className="mb-10 text-base text-slate-600 leading-relaxed text-justify bg-slate-50 p-8 rounded-xl border border-slate-100"><p>Declaro para devidos fins de fechamento e conferência que o serviço laboratorial referente ao paciente <strong className="text-slate-900"> {guidePatient.name} </strong> foi concluído com sucesso. O trabalho realizado consiste em <strong className="text-slate-900"> {guidePatient.prosthesisType} </strong>, entregue conforme especificações técnicas solicitadas.</p></div>
                       <div className="mb-12"><table className="w-full border-collapse"><thead><tr className="border-b-2 border-slate-800"><th className="py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Paciente</th><th className="py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Trabalho</th><th className="py-3 text-right text-xs font-bold text-slate-600 uppercase tracking-wider">Valor</th></tr></thead><tbody><tr className="border-b border-slate-200"><td className="py-4 text-sm text-slate-800 font-medium">{guidePatient.name}</td><td className="py-4 text-sm text-slate-600">{guidePatient.prosthesisType}</td><td className="py-4 text-right text-sm font-bold text-slate-800">{guidePatient.serviceValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td></tr></tbody><tfoot><tr className="border-t-2 border-slate-800"><td colSpan={2} className="py-4 text-right text-xs font-bold text-slate-600 uppercase tracking-wider">Total a Pagar:</td><td className="py-4 text-right text-xl font-black text-slate-900">{guidePatient.serviceValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td></tr></tfoot></table></div>
                       <div className="mt-auto"><div className="text-xs text-slate-500 mb-6 font-medium"><p>Marcos Antônio Lima Aguiar CPF: 012.271.432-65</p><p>Fone: (62) 98151-6879</p></div><div className="text-center text-[10px] text-slate-400 italic border-t border-slate-100 pt-6">"Por isso, vos digo que tudo o que pedirdes, orando, crede que o recebereis e tê-lo-eis."</div></div>
