@@ -4,7 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, Legend
 } from 'recharts';
-import { Wallet, Users, TrendingUp, TrendingDown } from 'lucide-react';
+import { Wallet, Users, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Activity } from 'lucide-react';
 
 interface DashboardProps {
   patients: Patient[];
@@ -12,12 +12,12 @@ interface DashboardProps {
 }
 
 const COLORS = {
-  [WorkflowStatus.PLANO_CERA]: '#94a3b8', // Slate 400
-  [WorkflowStatus.MOLDEIRA_INDIVIDUAL]: '#3b82f6', // Blue 500
-  [WorkflowStatus.MONTAGEM_DENTES]: '#eab308', // Yellow 500
-  [WorkflowStatus.REMONTAR_DENTES]: '#ef4444', // Red 500
-  [WorkflowStatus.ACRILIZAR]: '#a855f7', // Purple 500
-  [WorkflowStatus.FINALIZADO]: '#10b981', // Emerald 500
+  [WorkflowStatus.PLANO_CERA]: '#cbd5e1', // Slate 300
+  [WorkflowStatus.MOLDEIRA_INDIVIDUAL]: '#94a3b8', // Slate 400
+  [WorkflowStatus.MONTAGEM_DENTES]: '#fcd34d', // Amber 300
+  [WorkflowStatus.REMONTAR_DENTES]: '#f87171', // Red 400
+  [WorkflowStatus.ACRILIZAR]: '#818cf8', // Indigo 400
+  [WorkflowStatus.FINALIZADO]: '#34d399', // Emerald 400
 };
 
 const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
@@ -91,135 +91,123 @@ const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       
-      {/* BANNER SECTION - Reduced height and padding */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-blue-50/30 to-teal-50/30 border border-slate-200 p-5 shadow-sm">
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-60 h-60 rounded-full bg-blue-100/40 blur-3xl pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-60 h-60 rounded-full bg-teal-100/40 blur-3xl pointer-events-none"></div>
+      {/* HEADER TIPO BANNER - DISCRETO E PROFISSIONAL */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-50/80 via-indigo-50/30 to-teal-50/50 border border-blue-100 p-8 shadow-sm">
+         {/* Elemento decorativo de fundo */}
+         <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-gradient-to-br from-blue-100 to-teal-100 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
 
-        <div className="relative z-10">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
+         <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+            <div>
+               <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Painel de Controle</h1>
+               <p className="text-sm text-slate-500 font-medium mt-1">Visão geral do laboratório</p>
+            </div>
+            
+            <div className="text-xs text-blue-700 font-bold bg-white/60 backdrop-blur-sm px-4 py-2 rounded-xl border border-blue-100 shadow-sm flex items-center gap-2">
+               <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+               Atualizado em tempo real
+            </div>
+         </div>
+      </div>
+
+      {/* KPI Cards Grid - Minimalist & Clean */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          {/* Active Patients */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-all group">
+            <div className="flex justify-between items-start mb-4">
+              <div className="bg-blue-50 p-3 rounded-2xl text-blue-600 shadow-[0_4px_12px_-3px_rgba(37,99,235,0.2)] transition-transform group-hover:scale-105">
+                 <Users size={22} />
+              </div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ativos</span>
+            </div>
+            <div className="flex items-end justify-between">
                 <div>
-                    <h2 className="text-xl font-bold text-slate-800 tracking-tight">Visão Geral</h2>
-                    <p className="text-xs text-slate-500 mt-0.5 font-medium">Resumo financeiro e operacional</p>
-                </div>
-                <span className="text-[10px] font-semibold text-slate-500 bg-white/80 backdrop-blur px-2.5 py-1 rounded-full border border-slate-200 shadow-sm flex items-center gap-1.5">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-teal-500"></span>
-                    </span>
-                    Tempo Real
-                </span>
-            </div>
-
-            {/* KPI Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                
-                {/* Active Patients */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border-t-2 border-blue-500 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-3 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
-                    <Users size={60} />
-                </div>
-                <div className="flex justify-between items-start z-10">
-                    <div>
-                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Pacientes Ativos</p>
-                    <h3 className="text-2xl font-bold text-slate-800 mt-1">{stats.active}</h3>
-                    </div>
-                    <div className="bg-blue-50 p-2 rounded-md text-blue-600">
-                    <Users size={16} />
-                    </div>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-1.5 text-[9px] font-bold uppercase tracking-wide">
-                    <span className="bg-yellow-50 text-yellow-700 px-1.5 py-0.5 rounded border border-yellow-100">{stats.production} Produção</span>
-                    <span className="bg-red-50 text-red-700 px-1.5 py-0.5 rounded border border-red-100">{stats.rework} Retorno</span>
-                </div>
-                </div>
-
-                {/* Total Revenue */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border-t-2 border-emerald-500 flex flex-col justify-between hover:shadow-md transition-shadow group">
-                <div className="flex justify-between items-start">
-                    <div>
-                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Receita Total</p>
-                    <h3 className="text-2xl font-bold text-emerald-600 mt-1">{formatCurrency(stats.totalRevenue)}</h3>
-                    </div>
-                    <div className="bg-emerald-50 p-2 rounded-md text-emerald-600">
-                    <TrendingUp size={16} />
-                    </div>
-                </div>
-                <p className="text-[10px] text-slate-400 mt-3 font-medium">Acumulado anual</p>
-                </div>
-
-                {/* Expenses */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border-t-2 border-red-500 flex flex-col justify-between hover:shadow-md transition-shadow group">
-                <div className="flex justify-between items-start">
-                    <div>
-                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Despesas</p>
-                    <h3 className="text-2xl font-bold text-red-600 mt-1">{formatCurrency(stats.totalExpenses)}</h3>
-                    </div>
-                    <div className="bg-red-50 p-2 rounded-md text-red-600">
-                    <TrendingDown size={16} />
-                    </div>
-                </div>
-                <p className="text-[10px] text-slate-400 mt-3 font-medium">Custos operacionais</p>
-                </div>
-
-                {/* Net Profit */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border-t-2 border-indigo-500 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/30 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="flex justify-between items-start z-10">
-                    <div>
-                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Lucro Líquido</p>
-                    <h3 className={`text-2xl font-bold mt-1 ${stats.netProfit >= 0 ? 'text-slate-800' : 'text-red-600'}`}>
-                        {formatCurrency(stats.netProfit)}
-                    </h3>
-                    </div>
-                    <div className="bg-indigo-50 p-2 rounded-md text-indigo-600">
-                    <Wallet size={16} />
-                    </div>
-                </div>
-                <div className="mt-3 w-full bg-slate-100 rounded-full h-1 overflow-hidden z-10 relative">
-                    <div 
-                        className="bg-indigo-500 h-full rounded-full" 
-                        style={{ width: `${stats.totalRevenue > 0 ? Math.max(0, (stats.netProfit / stats.totalRevenue) * 100) : 0}%` }}
-                    ></div>
-                </div>
-                <p className="text-[9px] text-indigo-400 mt-1 text-right font-bold relative z-10">Margem Líquida</p>
+                  <h3 className="text-3xl font-bold text-slate-800 tracking-tight">{stats.active}</h3>
+                  <p className="text-xs text-slate-400 mt-1">Pacientes em andamento</p>
                 </div>
             </div>
-        </div>
+          </div>
+
+          {/* Revenue */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-all group">
+            <div className="flex justify-between items-start mb-4">
+              <div className="bg-emerald-50 p-3 rounded-2xl text-emerald-600 shadow-[0_4px_12px_-3px_rgba(16,185,129,0.2)] transition-transform group-hover:scale-105">
+                 <TrendingUp size={22} />
+              </div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Receita</span>
+            </div>
+             <div>
+                  <h3 className="text-3xl font-bold text-slate-800 tracking-tight">{formatCurrency(stats.totalRevenue)}</h3>
+                  <div className="flex items-center gap-1 text-emerald-600 text-xs mt-1 font-medium">
+                     <ArrowUpRight size={12}/> Entrada Bruta
+                  </div>
+             </div>
+          </div>
+
+          {/* Expenses */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-all group">
+            <div className="flex justify-between items-start mb-4">
+              <div className="bg-rose-50 p-3 rounded-2xl text-rose-600 shadow-[0_4px_12px_-3px_rgba(244,63,94,0.2)] transition-transform group-hover:scale-105">
+                 <TrendingDown size={22} />
+              </div>
+               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Despesas</span>
+            </div>
+             <div>
+                  <h3 className="text-3xl font-bold text-slate-800 tracking-tight">{formatCurrency(stats.totalExpenses)}</h3>
+                  <div className="flex items-center gap-1 text-rose-500 text-xs mt-1 font-medium">
+                     <ArrowDownRight size={12}/> Saída Total
+                  </div>
+             </div>
+          </div>
+
+          {/* Net Profit */}
+          <div className="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-[0_8px_20px_-6px_rgba(30,41,59,0.4)] hover:shadow-lg transition-all relative overflow-hidden group">
+             <div className="absolute top-0 right-0 w-32 h-32 bg-slate-700/30 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none group-hover:bg-slate-600/30 transition-colors"></div>
+             
+             <div className="flex justify-between items-start mb-4 relative z-10">
+               <div className="bg-slate-700 p-3 rounded-2xl text-white shadow-[0_4px_12px_-3px_rgba(0,0,0,0.3)]">
+                  <Wallet size={22} />
+               </div>
+               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Líquido</span>
+             </div>
+             <div className="relative z-10">
+                  <h3 className="text-3xl font-bold text-white tracking-tight">{formatCurrency(stats.netProfit)}</h3>
+                  <p className="text-xs text-slate-400 mt-1">Lucro Real</p>
+             </div>
+          </div>
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-100 lg:col-span-2 min-w-0">
-          <div className="flex justify-between items-center mb-5">
-            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide">Fluxo Financeiro</h3>
-            <select className="text-[10px] border border-slate-200 rounded-md px-2 py-1 bg-slate-50 text-slate-600 outline-none">
-                <option>Últimos 12 meses</option>
-            </select>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Bar Chart */}
+        <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 lg:col-span-2 flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-sm font-bold text-slate-700">Fluxo Financeiro</h3>
+             <div className="px-3 py-1 bg-slate-50 rounded-lg text-xs font-medium text-slate-500">Últimos 12 meses</div>
           </div>
           
-          <div className="h-64 w-full min-h-[16rem]">
+          <div className="flex-1 w-full min-h-[16rem]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} barGap={6}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10}} tickFormatter={(value) => `R$${value/1000}k`} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11}} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11}} tickFormatter={(value) => `R$${value/1000}k`} />
                 <RechartsTooltip 
                   cursor={{fill: '#f8fafc'}}
-                  contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px', padding: '8px'}}
+                  contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px -2px rgba(0,0,0,0.1)', fontSize: '12px', padding: '12px'}}
                 />
-                <Bar dataKey="revenue" name="Receita" fill="#14b8a6" radius={[3, 3, 0, 0]} maxBarSize={32} />
-                <Bar dataKey="expenses" name="Despesas" fill="#f87171" radius={[3, 3, 0, 0]} maxBarSize={32} />
+                <Bar dataKey="revenue" name="Receita" fill="#2dd4bf" radius={[4, 4, 0, 0]} maxBarSize={24} />
+                <Bar dataKey="expenses" name="Despesas" fill="#fca5a5" radius={[4, 4, 0, 0]} maxBarSize={24} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex flex-col min-w-0">
-           <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide mb-4">Status dos Pacientes</h3>
+        {/* Status Donut & Stats */}
+        <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 flex flex-col">
+           <h3 className="text-sm font-bold text-slate-700 mb-2">Status Operacional</h3>
            
-           {/* Pie Chart */}
-           <div className="h-40 mb-4 w-full min-h-[10rem]">
+           <div className="h-40 w-full relative flex items-center justify-center my-4">
              <ResponsiveContainer width="100%" height="100%">
                <PieChart>
                  <Pie
@@ -228,47 +216,44 @@ const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
                    cy="50%"
                    innerRadius={45}
                    outerRadius={65}
-                   paddingAngle={4}
+                   paddingAngle={5}
                    dataKey="value"
                    stroke="none"
+                   cornerRadius={4}
                  >
                    {statusData.map((entry, index) => (
-                     <Cell key={`cell-${index}`} fill={COLORS[entry.name as WorkflowStatus] || '#94a3b8'} />
+                     <Cell key={`cell-${index}`} fill={COLORS[entry.name as WorkflowStatus] || '#e2e8f0'} />
                    ))}
                  </Pie>
-                 <RechartsTooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px'}} />
-                 <Legend iconSize={6} fontSize={9} layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{fontSize: '9px'}} />
+                 <RechartsTooltip contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 15px -2px rgba(0,0,0,0.1)', fontSize: '12px'}} />
                </PieChart>
              </ResponsiveContainer>
+             {/* Center Label */}
+             <div className="absolute text-center pointer-events-none">
+                 <span className="block text-2xl font-bold text-slate-800">{stats.active + stats.completed}</span>
+                 <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wide">Total</span>
+             </div>
            </div>
 
-           <div className="space-y-2 flex-1 overflow-y-auto pr-1 custom-scrollbar">
-             <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-100">
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                  <span className="text-xs font-medium text-slate-700">Finalizados</span>
-                </div>
-                <span className="font-bold text-xs text-slate-800">{stats.completed}</span>
-             </div>
-             <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-100">
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>
-                  <span className="text-xs font-medium text-slate-700">Em Produção</span>
-                </div>
-                <span className="font-bold text-xs text-slate-800">{stats.production}</span>
-             </div>
-             <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-100">
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
-                  <span className="text-xs font-medium text-slate-700">Remontar</span>
-                </div>
-                <span className="font-bold text-xs text-slate-800">{stats.rework}</span>
-             </div>
-           </div>
-           
-           <div className="mt-3 pt-3 border-t border-slate-100 text-center">
-              <p className="text-[10px] text-slate-400">Total de Pacientes</p>
-              <p className="text-xl font-bold text-slate-800">{stats.active + stats.completed}</p>
+           <div className="space-y-3 mt-auto">
+              <div className="flex items-center justify-between text-xs">
+                 <span className="flex items-center gap-2 text-slate-500 font-medium">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span> Finalizados
+                 </span>
+                 <span className="font-bold text-slate-800">{stats.completed}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                 <span className="flex items-center gap-2 text-slate-500 font-medium">
+                    <span className="w-2 h-2 rounded-full bg-amber-300"></span> Em Produção
+                 </span>
+                 <span className="font-bold text-slate-800">{stats.production}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                 <span className="flex items-center gap-2 text-slate-500 font-medium">
+                    <span className="w-2 h-2 rounded-full bg-red-400"></span> Retorno
+                 </span>
+                 <span className="font-bold text-slate-800">{stats.rework}</span>
+              </div>
            </div>
         </div>
       </div>
