@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Users, TrendingDown, WifiOff, Wifi, X, Archive, Building2, ClipboardList, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, TrendingDown, WifiOff, Wifi, X, Archive, Building2, ClipboardList, LogOut, ShieldCheck } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
@@ -86,6 +86,16 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
 
         {/* Footer */}
         <div className="p-4 mt-auto space-y-3 bg-slate-50/30">
+          
+          {/* License Info */}
+          <div className="w-full flex flex-col items-center p-2.5 rounded-xl bg-white border border-slate-100 mb-1 shadow-sm">
+             <div className="flex items-center gap-1.5 mb-1">
+                <ShieldCheck size={12} className="text-blue-500" />
+                <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Licenciado</span>
+             </div>
+             <span className="text-[10px] font-medium text-slate-400">Vencimento: Dia 16</span>
+          </div>
+
           {/* Status Indicator */}
           <div className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-[11px] font-semibold border transition-all ${
             isOnline ? 'bg-emerald-50/50 border-emerald-100/50 text-emerald-700' : 'bg-slate-100 border-slate-200 text-slate-500'
