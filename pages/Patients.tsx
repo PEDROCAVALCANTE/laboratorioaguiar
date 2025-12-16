@@ -52,9 +52,9 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
   const [formData, setFormData] = useState<Partial<Patient>>(initialFormState);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Clean Inputs
-  const inputClassName = "w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all placeholder:text-slate-400 hover:border-slate-300";
-  const labelClassName = "block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5 ml-1";
+  // Clean Inputs - Alterado para bg-white para garantir contraste nas listras
+  const inputClassName = "w-full bg-white text-slate-800 border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all placeholder:text-slate-400 hover:border-blue-200 shadow-sm";
+  const labelClassName = "block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5 ml-1";
 
   const filteredPatients = patients.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -325,87 +325,100 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
               <button onClick={() => setIsFormOpen(false)} className="text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-50 transition"><X size={20} /></button>
             </div>
 
-            <div className="flex border-b border-slate-100 bg-slate-50/50">
-                <button type="button" onClick={() => setActiveModalTab('info')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeModalTab === 'info' ? 'text-blue-600 border-blue-500 bg-white' : 'text-slate-400 border-transparent hover:text-slate-600'}`}>Dados</button>
-                <button type="button" onClick={() => setActiveModalTab('services')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeModalTab === 'services' ? 'text-blue-600 border-blue-500 bg-white' : 'text-slate-400 border-transparent hover:text-slate-600'}`}>Serviços</button>
+            <div className="flex border-b border-slate-100 bg-slate-50">
+                <button type="button" onClick={() => setActiveModalTab('info')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeModalTab === 'info' ? 'text-blue-600 border-blue-500 bg-white' : 'text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-100'}`}>Dados</button>
+                <button type="button" onClick={() => setActiveModalTab('services')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeModalTab === 'services' ? 'text-blue-600 border-blue-500 bg-white' : 'text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-100'}`}>Serviços</button>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 bg-white">
-              <div className="space-y-6">
-                
-                {/* Info Tab */}
-                <div className={activeModalTab === 'info' ? 'block space-y-6 animate-in fade-in slide-in-from-left-2 duration-200' : 'hidden'}>
-                    <div>
-                        <label className={labelClassName}>Nome do Paciente</label>
-                        <input required={activeModalTab === 'info'} type="text" className={inputClassName} value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Nome completo" />
-                    </div>
-                    
-                    <div>
-                        <label className={labelClassName}>Clínica</label>
-                        <input required={activeModalTab === 'info'} type="text" list="clinic-catalog" className={inputClassName} value={formData.clinic} onChange={e => setFormData({...formData, clinic: e.target.value})} placeholder="Selecione ou digite" />
-                        <datalist id="clinic-catalog">{clinicsList.map(c => <option key={c.id} value={c.name} />)}</datalist>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label className={labelClassName}>Dentista</label>
-                            <input required={activeModalTab === 'info'} type="text" className={inputClassName} value={formData.doctorName} onChange={e => setFormData({...formData, doctorName: e.target.value})} />
-                        </div>
-                        <div>
-                            <label className={labelClassName}>Telefone</label>
-                            <input required={activeModalTab === 'info'} type="text" className={inputClassName} value={formData.doctorPhone} onChange={e => setFormData({...formData, doctorPhone: e.target.value})} />
-                        </div>
-                    </div>
-                    
-                    <div className="flex justify-end pt-2">
-                         <button type="button" onClick={() => setActiveModalTab('services')} className="text-blue-600 text-sm font-semibold hover:bg-blue-50 px-4 py-2 rounded-lg transition flex items-center gap-1">Próximo <ChevronRight size={16} /></button>
-                    </div>
-                </div>
+            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto bg-white">
+              
+              {/* Info Tab - CANDY CANE STYLE */}
+              <div className={activeModalTab === 'info' ? 'block animate-in fade-in slide-in-from-left-2 duration-200' : 'hidden'}>
+                  {/* Stripe 1: Name (White) */}
+                  <div className="px-8 py-6 bg-white">
+                      <label className={labelClassName}>Nome do Paciente</label>
+                      <input required={activeModalTab === 'info'} type="text" className={inputClassName} value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Nome completo" />
+                  </div>
+                  
+                  {/* Stripe 2: Clinic (Light Slate) */}
+                  <div className="px-8 py-6 bg-slate-50 border-y border-slate-100">
+                      <label className={labelClassName}>Clínica</label>
+                      <input required={activeModalTab === 'info'} type="text" list="clinic-catalog" className={inputClassName} value={formData.clinic} onChange={e => setFormData({...formData, clinic: e.target.value})} placeholder="Selecione ou digite" />
+                      <datalist id="clinic-catalog">{clinicsList.map(c => <option key={c.id} value={c.name} />)}</datalist>
+                  </div>
+                  
+                  {/* Stripe 3: Dentist Info (White) */}
+                  <div className="px-8 py-6 bg-white">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                          <div>
+                              <label className={labelClassName}>Dentista</label>
+                              <input required={activeModalTab === 'info'} type="text" className={inputClassName} value={formData.doctorName} onChange={e => setFormData({...formData, doctorName: e.target.value})} />
+                          </div>
+                          <div>
+                              <label className={labelClassName}>Telefone</label>
+                              <input required={activeModalTab === 'info'} type="text" className={inputClassName} value={formData.doctorPhone} onChange={e => setFormData({...formData, doctorPhone: e.target.value})} />
+                          </div>
+                      </div>
+                  </div>
 
-                {/* Services Tab */}
-                <div className={activeModalTab === 'services' ? 'block space-y-6 animate-in fade-in slide-in-from-right-2 duration-200' : 'hidden'}>
-                     <div>
-                        <label className={labelClassName}>Tipo de Prótese</label>
-                        <input required={activeModalTab === 'services'} type="text" list="service-catalog" className={inputClassName} value={formData.prosthesisType} onChange={handleProsthesisTypeChange} placeholder="Selecione..." />
-                        <datalist id="service-catalog">{servicesList.map(s => <option key={s.id} value={s.name}>{`R$ ${s.price.toFixed(2)}`}</option>)}</datalist>
-                     </div>
-
-                     <div className="grid grid-cols-2 gap-5">
-                        <div>
-                            <label className={labelClassName}>Valor (R$)</label>
-                            <input required={activeModalTab === 'services'} type="number" step="0.01" className={inputClassName} value={formData.serviceValue} onChange={e => setFormData({...formData, serviceValue: parseFloat(e.target.value)})} />
-                        </div>
-                        <div>
-                            <label className={labelClassName}>Pagamento</label>
-                            <select className={inputClassName} value={formData.paymentStatus} onChange={e => setFormData({...formData, paymentStatus: e.target.value as PaymentStatus})}>
-                                <option value={PaymentStatus.PENDENTE}>Pendente</option>
-                                <option value={PaymentStatus.PAGO}>Pago</option>
-                            </select>
-                        </div>
-                     </div>
-
-                     <div className="grid grid-cols-2 gap-5">
-                        <div>
-                            <label className={labelClassName}>Entrada</label>
-                            <div className="w-full">
-                              <DatePicker selected={parseDate(formData.entryDate)} onChange={(date: Date | null) => { if (date) setFormData({...formData, entryDate: formatDate(date)}); }} dateFormat="dd/MM/yyyy" locale="pt-BR" className={inputClassName} wrapperClassName="w-full" required={activeModalTab === 'services'} />
-                            </div>
-                        </div>
-                        <div>
-                            <label className={labelClassName}>Entrega</label>
-                            <div className="w-full">
-                              <DatePicker selected={parseDate(formData.dueDate)} onChange={(date: Date | null) => { if (date) setFormData({...formData, dueDate: formatDate(date)}); }} dateFormat="dd/MM/yyyy" locale="pt-BR" className={inputClassName} wrapperClassName="w-full" required={activeModalTab === 'services'} />
-                            </div>
-                        </div>
-                     </div>
-                     <div>
-                        <label className={labelClassName}>Observações</label>
-                        <textarea className={inputClassName} rows={2} value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} placeholder="Anotações opcionais..."></textarea>
-                     </div>
-                </div>
+                  <div className="px-8 py-6 bg-slate-50 border-t border-slate-100 flex justify-end">
+                       <button type="button" onClick={() => setActiveModalTab('services')} className="text-blue-600 text-sm font-semibold hover:bg-white px-4 py-2 rounded-lg transition flex items-center gap-1 shadow-sm border border-transparent hover:border-slate-100">Próximo <ChevronRight size={16} /></button>
+                  </div>
               </div>
 
-              <div className="pt-6 mt-8 border-t border-slate-50 flex justify-end gap-3">
+              {/* Services Tab - CANDY CANE STYLE */}
+              <div className={activeModalTab === 'services' ? 'block animate-in fade-in slide-in-from-right-2 duration-200' : 'hidden'}>
+                   {/* Stripe 1: Prosthesis Type (White) */}
+                   <div className="px-8 py-6 bg-white">
+                      <label className={labelClassName}>Tipo de Prótese</label>
+                      <input required={activeModalTab === 'services'} type="text" list="service-catalog" className={inputClassName} value={formData.prosthesisType} onChange={handleProsthesisTypeChange} placeholder="Selecione..." />
+                      <datalist id="service-catalog">{servicesList.map(s => <option key={s.id} value={s.name}>{`R$ ${s.price.toFixed(2)}`}</option>)}</datalist>
+                   </div>
+
+                   {/* Stripe 2: Value & Payment (Light Slate) */}
+                   <div className="px-8 py-6 bg-slate-50 border-y border-slate-100">
+                      <div className="grid grid-cols-2 gap-5">
+                          <div>
+                              <label className={labelClassName}>Valor (R$)</label>
+                              <input required={activeModalTab === 'services'} type="number" step="0.01" className={inputClassName} value={formData.serviceValue} onChange={e => setFormData({...formData, serviceValue: parseFloat(e.target.value)})} />
+                          </div>
+                          <div>
+                              <label className={labelClassName}>Pagamento</label>
+                              <select className={inputClassName} value={formData.paymentStatus} onChange={e => setFormData({...formData, paymentStatus: e.target.value as PaymentStatus})}>
+                                  <option value={PaymentStatus.PENDENTE}>Pendente</option>
+                                  <option value={PaymentStatus.PAGO}>Pago</option>
+                              </select>
+                          </div>
+                      </div>
+                   </div>
+
+                   {/* Stripe 3: Dates (White) */}
+                   <div className="px-8 py-6 bg-white">
+                      <div className="grid grid-cols-2 gap-5">
+                          <div>
+                              <label className={labelClassName}>Entrada</label>
+                              <div className="w-full">
+                                <DatePicker selected={parseDate(formData.entryDate)} onChange={(date: Date | null) => { if (date) setFormData({...formData, entryDate: formatDate(date)}); }} dateFormat="dd/MM/yyyy" locale="pt-BR" className={inputClassName} wrapperClassName="w-full" required={activeModalTab === 'services'} />
+                              </div>
+                          </div>
+                          <div>
+                              <label className={labelClassName}>Entrega</label>
+                              <div className="w-full">
+                                <DatePicker selected={parseDate(formData.dueDate)} onChange={(date: Date | null) => { if (date) setFormData({...formData, dueDate: formatDate(date)}); }} dateFormat="dd/MM/yyyy" locale="pt-BR" className={inputClassName} wrapperClassName="w-full" required={activeModalTab === 'services'} />
+                              </div>
+                          </div>
+                      </div>
+                   </div>
+
+                   {/* Stripe 4: Notes (Light Slate) */}
+                   <div className="px-8 py-6 bg-slate-50 border-t border-slate-100">
+                      <label className={labelClassName}>Observações</label>
+                      <textarea className={inputClassName} rows={2} value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} placeholder="Anotações opcionais..."></textarea>
+                   </div>
+              </div>
+
+              {/* Footer Actions */}
+              <div className="p-6 border-t border-slate-200 flex justify-end gap-3 bg-white">
                  {showSuccess ? (
                    <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2.5 rounded-xl font-medium text-sm animate-in fade-in">
                      <CheckCircle size={18} /> Salvo!
