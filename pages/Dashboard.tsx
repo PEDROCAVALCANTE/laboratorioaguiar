@@ -4,7 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, AreaChart, Area
 } from 'recharts';
-import { Wallet, Users, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Activity, Clock } from 'lucide-react';
+import { Wallet, Users, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Activity, Clock, Sun, Moon } from 'lucide-react';
 
 interface DashboardProps {
   patients: Patient[];
@@ -91,21 +91,50 @@ const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
   };
 
-  const getGreeting = () => {
+  const getGreetingData = () => {
     const hour = new Date().getHours();
-    if (hour >= 5 && hour < 12) return 'Bom dia';
-    if (hour >= 12 && hour < 18) return 'Boa tarde';
-    return 'Boa noite';
+    if (hour >= 5 && hour < 12) return { text: 'Bom dia', icon: Sun, color: 'text-amber-500', bg: 'bg-amber-50' };
+    if (hour >= 12 && hour < 18) return { text: 'Boa tarde', icon: Sun, color: 'text-orange-500', bg: 'bg-orange-50' };
+    return { text: 'Boa noite', icon: Moon, color: 'text-indigo-500', bg: 'bg-indigo-50' };
   };
+
+  const greeting = getGreetingData();
+  const GreetingIcon = greeting.icon;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       
-      {/* Intro Section - Clean */}
-      <div className="flex flex-col md:flex-row justify-between items-end gap-4 pb-2">
-         <div>
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">{getGreeting()}, Thaynara!</h1>
-            <p className="text-slate-500 mt-1">Aqui está o resumo do laboratório hoje.</p>
+      {/* Intro Section - Visually Enhanced Banner */}
+      <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
+         {/* Background Decoration */}
+         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-50 to-teal-50 rounded-full blur-3xl opacity-60 -mr-16 -mt-16 pointer-events-none"></div>
+         
+         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+            <div>
+               <div className="flex items-center gap-2 mb-2">
+                 <div className={`p-1.5 rounded-full ${greeting.bg} ${greeting.color}`}>
+                    <GreetingIcon size={14} />
+                 </div>
+                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                   Visão Geral do Laboratório
+                 </span>
+               </div>
+               <h1 className="text-3xl font-bold text-slate-800 tracking-tight">
+                 {greeting.text}, Thaynara!
+               </h1>
+               <p className="text-slate-500 mt-1.5 max-w-lg text-sm font-medium">
+                 Acompanhe abaixo o desempenho financeiro e operacional de hoje.
+               </p>
+            </div>
+            
+            <div className="hidden md:block">
+               <div className="text-right">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Data de Hoje</span>
+                  <p className="text-sm font-semibold text-slate-700 capitalize">
+                    {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                  </p>
+               </div>
+            </div>
          </div>
       </div>
 
