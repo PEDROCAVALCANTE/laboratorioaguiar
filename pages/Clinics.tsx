@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
 import { Clinic } from '../types';
-import { Plus, Trash2, Building2, User, Phone } from 'lucide-react';
+import { Plus, Trash2, Building2, User, Phone, RotateCcw } from 'lucide-react';
 
 interface ClinicsProps {
   clinics: Clinic[];
   onAddClinic: (clinic: Clinic) => void;
   onDeleteClinic: (id: string) => void;
+  onSyncRequest?: () => void;
 }
 
-const Clinics: React.FC<ClinicsProps> = ({ clinics, onAddClinic, onDeleteClinic }) => {
+const Clinics: React.FC<ClinicsProps> = ({ clinics, onAddClinic, onDeleteClinic, onSyncRequest }) => {
   const [formData, setFormData] = useState<Partial<Clinic>>({
     name: '',
     doctorName: '',
     phone: ''
   });
+  const [isSyncing, setIsSyncing] = useState(false);
 
-  // Minimalist Styling
   const inputClassName = "w-full bg-white text-slate-900 border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-teal-500/20 focus:border-teal-500 transition-all placeholder:text-slate-400 hover:border-slate-300 shadow-sm";
   const labelClassName = "block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1";
 
@@ -31,18 +32,36 @@ const Clinics: React.FC<ClinicsProps> = ({ clinics, onAddClinic, onDeleteClinic 
     setFormData({ name: '', doctorName: '', phone: '' });
   };
 
+  const handleManualSync = () => {
+    if (onSyncRequest) {
+      setIsSyncing(true);
+      onSyncRequest();
+      setTimeout(() => setIsSyncing(false), 2000);
+    }
+  };
+
   return (
     <div className="space-y-4 animate-in fade-in duration-500">
       
       {/* Banner Minimalista */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-blue-50/30 to-teal-50/30 border border-slate-200 p-5 shadow-sm">
-        <div className="relative z-10 flex justify-between items-center">
+        <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
              <div>
                 <h2 className="text-xl font-bold text-slate-800 tracking-tight">Clínicas Parceiras</h2>
                 <p className="text-xs text-slate-500 mt-1 font-medium">Gerencie o cadastro de consultórios e dentistas.</p>
             </div>
-            <div className="bg-white/80 p-2 rounded-lg shadow-sm border border-slate-100 text-teal-600 hidden sm:block">
-                <Building2 size={20} />
+            <div className="flex items-center gap-3">
+                <button 
+                  onClick={handleManualSync}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm"
+                  title="Garante que todas as clínicas das imagens estejam cadastradas"
+                >
+                  <RotateCcw size={14} className={isSyncing ? 'animate-spin' : ''} />
+                  {isSyncing ? 'Sincronizando...' : 'Restaurar Padrões'}
+                </button>
+                <div className="bg-white/80 p-2 rounded-lg shadow-sm border border-slate-100 text-teal-600 hidden sm:block">
+                    <Building2 size={20} />
+                </div>
             </div>
         </div>
       </div>
@@ -75,11 +94,11 @@ const Clinics: React.FC<ClinicsProps> = ({ clinics, onAddClinic, onDeleteClinic 
 
         {/* Clinics List */}
         <div className="lg:col-span-2 space-y-3">
-           {clinics.map(clinic => (
+           {clinics.sort((a, b) => a.name.localeCompare(b.name)).map(clinic => (
              <div key={clinic.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between group hover:border-teal-200 transition">
                <div className="flex-1">
                  <div className="flex items-center gap-3 mb-1.5">
-                   <div className="bg-slate-50 p-1.5 rounded-md text-slate-400">
+                   <div className="bg-slate-50 p-1.5 rounded-md text-slate-400 group-hover:bg-teal-50 group-hover:text-teal-500 transition-colors">
                      <Building2 size={16} />
                    </div>
                    <h4 className="font-bold text-slate-800 text-base">{clinic.name}</h4>
@@ -92,7 +111,7 @@ const Clinics: React.FC<ClinicsProps> = ({ clinics, onAddClinic, onDeleteClinic 
                <div className="flex items-center gap-3 pl-3 border-l border-slate-100 ml-3">
                  <button 
                   onClick={() => {
-                    if(confirm('Excluir esta clínica?')) onDeleteClinic(clinic.id);
+                    if(confirm(`Deseja excluir a clínica ${clinic.name}?`)) onDeleteClinic(clinic.id);
                   }}
                   className="p-1.5 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-md transition"
                   title="Excluir"
@@ -103,8 +122,10 @@ const Clinics: React.FC<ClinicsProps> = ({ clinics, onAddClinic, onDeleteClinic 
              </div>
            ))}
            {clinics.length === 0 && (
-             <div className="text-center py-8 text-sm text-slate-400 bg-white rounded-xl border border-dashed border-slate-200">
-               Nenhuma clínica cadastrada.
+             <div className="text-center py-12 text-sm text-slate-400 bg-white rounded-xl border border-dashed border-slate-200">
+               <Building2 size={32} className="mx-auto mb-2 opacity-20" />
+               <p>Nenhuma clínica cadastrada.</p>
+               <button onClick={handleManualSync} className="text-teal-600 font-bold mt-2 hover:underline">Importar Lista Padrão</button>
              </div>
            )}
         </div>

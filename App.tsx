@@ -11,7 +11,7 @@ import { StorageService } from './services/storage';
 import { Patient, Expense, Clinic, ServiceItem } from './types';
 import { Menu, Calendar, ShieldCheck, Bell } from 'lucide-react';
 
-// Data seeding for first run
+// Data seeding for first run - Exact list from images
 const DEFAULT_SERVICES = [
   { name: 'Protocolo de Resina / Dente Delara', price: 1200 },
   { name: 'Prótese Total', price: 280 },
@@ -28,61 +28,91 @@ const DEFAULT_SERVICES = [
   { name: 'Prótese Total Caracterizada STG', price: 400 },
 ];
 
-const DEFAULT_CLINICS = [
-  "Odonto Centro 85", "Odonto Pedro Luduvico", "Odonto Shopping Estação", 
-  "Odonto Company Portal Shopping", "Odonto Company Jataí", "Odonto Fama", 
-  "Oral Desing T9", "Menezes Odontologia", "Dra. Fabyanne", "Center Implantes", 
-  "Odonto Company Vila Pedroso", "Dra. Pollyanna", "Mil Sorrisos", 
-  "Odonto Company Vera Cruz", "Ortho Dontic", "Interdente"
+const DEFAULT_CLINICS_NAMES = [
+  "Odonto Centro 85", 
+  "Odonto Pedro Luduvico", 
+  "Odonto Shopping Estação", 
+  "Odonto Company Portal Shopping", 
+  "Odonto Company Jataí", 
+  "Odonto Fama", 
+  "Oral Desing T9", 
+  "Menezes Odontologia", 
+  "Dra. Fabyanne", 
+  "Center Implantes", 
+  "Odonto Company Vila Pedroso", 
+  "Dra. Pollyanna", 
+  "Mil Sorrisos", 
+  "Odonto Company Vera Cruz", 
+  "Ortho Dontic", 
+  "Interdente"
 ];
 
 const App: React.FC = () => {
-  // Auth State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
-
-  // App State
   const [activeTab, setActiveTab] = useState('dashboard');
   const [patients, setPatients] = useState<Patient[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [clinics, setClinics] = useState<Clinic[]>([]);
   const [services, setServices] = useState<ServiceItem[]>([]);
-  
   const [isLoading, setIsLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(false);
 
-  // Check auth on mount
   useEffect(() => {
     const auth = localStorage.getItem('lab_aguiar_auth');
-    if (auth === 'authenticated') {
-      setIsAuthenticated(true);
-    }
+    if (auth === 'authenticated') setIsAuthenticated(true);
     setIsAuthChecking(false);
   }, []);
 
-  // Login Handler
   const handleLogin = () => {
     localStorage.setItem('lab_aguiar_auth', 'authenticated');
     setIsAuthenticated(true);
   };
 
-  // Logout Handler
   const handleLogout = () => {
     localStorage.removeItem('lab_aguiar_auth');
     setIsAuthenticated(false);
-    // Reset states optional but good practice
     setActiveTab('dashboard');
   };
 
-  // Load data function wrapped in useCallback to be passed down
-  const fetchData = useCallback(async () => {
-    // Only fetch if authenticated
-    if (!isAuthenticated) return;
+  const syncDefaultData = async (currentClinics: Clinic[], currentServices: ServiceItem[]) => {
+    let updated = false;
 
+    // Verificar Clínicas Faltantes
+    for (const name of DEFAULT_CLINICS_NAMES) {
+      if (!currentClinics.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+        const newClinic: Clinic = {
+          id: `seed-cln-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          name: name,
+          doctorName: 'Dentista Responsável',
+          phone: ''
+        };
+        await StorageService.saveClinic(newClinic);
+        updated = true;
+      }
+    }
+
+    // Verificar Serviços Faltantes
+    if (currentServices.length === 0) {
+      for (const s of DEFAULT_SERVICES) {
+        const newService: ServiceItem = {
+          id: `seed-svc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          name: s.name,
+          price: s.price
+        };
+        await StorageService.saveService(newService);
+        updated = true;
+      }
+    }
+
+    return updated;
+  };
+
+  const fetchData = useCallback(async () => {
+    if (!isAuthenticated) return;
     setIsLoading(true);
     try {
-      // Check connection first
       const connected = await StorageService.testConnection();
       setIsOnline(connected);
 
@@ -96,28 +126,19 @@ const App: React.FC = () => {
       setPatients(loadedPatients);
       setExpenses(loadedExpenses);
 
-      // Seeding Data Logic (Run only if empty)
-      if (loadedServices.length === 0) {
-          const initialServices = DEFAULT_SERVICES.map((s, idx) => ({ 
-              id: `seed-${idx}`, 
-              name: s.name, 
-              price: s.price 
-          }));
-          setServices(initialServices);
+      // Sincronização proativa de clínicas padrão
+      const wasUpdated = await syncDefaultData(loadedClinics, loadedServices);
+      
+      if (wasUpdated) {
+        const [freshClinics, freshServices] = await Promise.all([
+          StorageService.getClinics(),
+          StorageService.getServices()
+        ]);
+        setClinics(freshClinics);
+        setServices(freshServices);
       } else {
-          setServices(loadedServices);
-      }
-
-      if (loadedClinics.length === 0) {
-          const initialClinics = DEFAULT_CLINICS.map((c, idx) => ({
-              id: `seed-${idx}`,
-              name: c,
-              doctorName: '', 
-              phone: ''
-          }));
-          setClinics(initialClinics);
-      } else {
-          setClinics(loadedClinics);
+        setClinics(loadedClinics);
+        setServices(loadedServices);
       }
 
     } catch (error) {
@@ -127,146 +148,27 @@ const App: React.FC = () => {
     }
   }, [isAuthenticated]);
 
-  // Fetch data when authentication status changes to true
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchData();
-    }
+    if (isAuthenticated) fetchData();
   }, [isAuthenticated, fetchData]);
 
-  // Handlers for Data (Same as before)
-  const handleAddPatient = async (patient: Patient) => {
-    setIsLoading(true);
-    try {
-      await StorageService.savePatient(patient);
-      const updated = await StorageService.getPatients();
-      setPatients(updated);
-    } catch (error) {
-      console.error("Error adding patient:", error);
-      alert("Erro ao adicionar paciente.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Handlers
+  const handleAddPatient = async (p: Patient) => { await StorageService.savePatient(p); fetchData(); };
+  const handleUpdatePatient = async (p: Patient) => { await StorageService.savePatient(p); fetchData(); };
+  const handleDeletePatient = async (id: string) => { await StorageService.deletePatient(id); fetchData(); };
+  const handleAddExpense = async (e: Expense) => { await StorageService.saveExpense(e); fetchData(); };
+  const handleDeleteExpense = async (id: string) => { await StorageService.deleteExpense(id); fetchData(); };
+  const handleAddClinic = async (c: Clinic) => { await StorageService.saveClinic(c); fetchData(); };
+  const handleDeleteClinic = async (id: string) => { await StorageService.deleteClinic(id); fetchData(); };
+  const handleAddService = async (s: ServiceItem) => { await StorageService.saveService(s); fetchData(); };
+  const handleDeleteService = async (id: string) => { await StorageService.deleteService(id); fetchData(); };
 
-  const handleUpdatePatient = async (patient: Patient) => {
-    setIsLoading(true);
-    try {
-      await StorageService.savePatient(patient);
-      const updated = await StorageService.getPatients();
-      setPatients(updated);
-    } catch (error) {
-      console.error("Error updating patient:", error);
-      alert("Erro ao atualizar paciente.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDeletePatient = async (id: string) => {
-    setIsLoading(true);
-    try {
-      await StorageService.deletePatient(id);
-      const updated = await StorageService.getPatients();
-      setPatients(updated);
-    } catch (error) {
-      console.error("Error deleting patient:", error);
-      alert("Erro ao excluir paciente.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleAddExpense = async (expense: Expense) => {
-    setIsLoading(true);
-    try {
-      await StorageService.saveExpense(expense);
-      const updated = await StorageService.getExpenses();
-      setExpenses(updated);
-    } catch (error) {
-      console.error("Error adding expense:", error);
-      alert("Erro ao adicionar despesa.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDeleteExpense = async (id: string) => {
-    setIsLoading(true);
-    try {
-      await StorageService.deleteExpense(id);
-      const updated = await StorageService.getExpenses();
-      setExpenses(updated);
-    } catch (error) {
-      console.error("Error deleting expense:", error);
-      alert("Erro ao excluir despesa.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleAddClinic = async (clinic: Clinic) => {
-    setIsLoading(true);
-    try {
-      await StorageService.saveClinic(clinic);
-      const updated = await StorageService.getClinics();
-      setClinics(updated);
-    } catch (error) { console.error(error); } finally { setIsLoading(false); }
-  };
-
-  const handleDeleteClinic = async (id: string) => {
-    setIsLoading(true);
-    try {
-      await StorageService.deleteClinic(id);
-      const updated = await StorageService.getClinics();
-      setClinics(updated);
-    } catch (error) { console.error(error); } finally { setIsLoading(false); }
-  };
-
-  const handleAddService = async (service: ServiceItem) => {
-    setIsLoading(true);
-    try {
-      await StorageService.saveService(service);
-      const updated = await StorageService.getServices();
-      setServices(updated);
-    } catch (error) { console.error(error); } finally { setIsLoading(false); }
-  };
-
-  const handleDeleteService = async (id: string) => {
-    setIsLoading(true);
-    try {
-      await StorageService.deleteService(id);
-      const updated = await StorageService.getServices();
-      setServices(updated);
-    } catch (error) { console.error(error); } finally { setIsLoading(false); }
-  };
-
-  // Auth Checking State
-  if (isAuthChecking) {
-    return null; // Or a splash screen
-  }
-
-  // Not Authenticated -> Show Login
-  if (!isAuthenticated) {
-    return <Login onLogin={handleLogin} />;
-  }
-
-  // Authenticated -> Show App
-  if (isLoading && patients.length === 0 && expenses.length === 0 && clinics.length === 0) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center bg-slate-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-          <div className="text-slate-600 font-medium text-lg animate-pulse">Carregando Sistema...</div>
-        </div>
-      </div>
-    );
-  }
+  if (isAuthChecking) return null;
+  if (!isAuthenticated) return <Login onLogin={handleLogin} />;
 
   return (
     <div className="min-h-screen bg-slate-50 flex font-sans text-slate-900">
-      
-      {/* Mobile Header (Fixed) */}
+      {/* Mobile Header */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-40 flex items-center justify-between px-4 shadow-sm">
         <div className="flex items-center gap-3">
             <div className="h-8 w-8 bg-blue-50 rounded-lg flex items-center justify-center">
@@ -274,36 +176,27 @@ const App: React.FC = () => {
             </div>
             <span className="font-bold text-slate-800 text-sm">Aguiar Prótese</span>
         </div>
-        <button 
-            onClick={() => setIsMobileMenuOpen(true)}
-            className="p-2 text-slate-600 hover:bg-slate-50 rounded-lg"
-        >
+        <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 text-slate-600 hover:bg-slate-50 rounded-lg">
             <Menu size={24} />
         </button>
       </div>
 
       <Sidebar 
         activeTab={activeTab} 
-        setActiveTab={(tab) => {
-            setActiveTab(tab);
-            setIsMobileMenuOpen(false);
-        }} 
+        setActiveTab={(tab) => { setActiveTab(tab); setIsMobileMenuOpen(false); }} 
         isOnline={isOnline} 
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         onLogout={handleLogout}
       />
       
-      {/* Main Content Area */}
       <main className={`flex-1 transition-all duration-300 overflow-y-auto h-screen relative md:ml-64 bg-slate-50`}>
-        
-        {/* === HEADER MINIMALISTA (DESKTOP) === */}
         <header className="hidden md:flex items-center justify-between px-8 py-4 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30">
             <div className="flex items-center gap-4">
-               <h2 className="text-xl font-bold text-slate-800 tracking-tight">
+               <h2 className="text-xl font-bold text-slate-800 tracking-tight capitalize">
                   {activeTab === 'dashboard' && 'Visão Geral'}
                   {activeTab === 'patients' && 'Gestão de Pacientes'}
-                  {activeTab === 'archives' && 'Arquivo Morto'}
+                  {activeTab === 'archives' && 'Arquivo Geral'}
                   {activeTab === 'expenses' && 'Financeiro'}
                   {activeTab === 'clinics' && 'Clínicas'}
                   {activeTab === 'services' && 'Serviços'}
@@ -315,7 +208,6 @@ const App: React.FC = () => {
                </div>
             </div>
 
-            {/* Right Side: Data e Contexto */}
             <div className="flex items-center gap-6">
                 <div className="flex items-center gap-4">
                   <div className="text-right hidden lg:block">
@@ -328,9 +220,7 @@ const App: React.FC = () => {
                     <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                   </button>
                 </div>
-                
                 <div className="h-8 w-px bg-slate-200 hidden lg:block"></div>
-                
                 <div className="flex items-center gap-3 pl-2">
                    <div className="text-right hidden xl:block">
                       <p className="text-xs font-bold text-slate-800">Thaynara</p>
@@ -343,9 +233,7 @@ const App: React.FC = () => {
             </div>
         </header>
 
-        {/* Wrapper do Conteúdo */}
         <div className="p-4 pt-20 md:p-8 md:pt-6 max-w-7xl mx-auto space-y-8 pb-12">
-          
           {isLoading && (
             <div className="fixed top-24 md:top-24 right-4 md:right-8 z-50 bg-white/90 backdrop-blur px-4 py-2 rounded-full text-xs font-bold text-blue-600 shadow-lg shadow-blue-500/10 border border-blue-100 flex items-center gap-2 animate-in slide-in-from-top-2">
               <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
@@ -353,9 +241,7 @@ const App: React.FC = () => {
             </div>
           )}
 
-          {activeTab === 'dashboard' && (
-            <Dashboard patients={patients} expenses={expenses} />
-          )}
+          {activeTab === 'dashboard' && <Dashboard patients={patients} expenses={expenses} />}
           {activeTab === 'patients' && (
             <Patients 
               patients={patients} 
@@ -366,30 +252,10 @@ const App: React.FC = () => {
               servicesList={services}
             />
           )}
-          {activeTab === 'archives' && (
-            <Archives patients={patients} onDataUpdate={fetchData} />
-          )}
-          {activeTab === 'expenses' && (
-            <Expenses 
-              expenses={expenses} 
-              onAddExpense={handleAddExpense} 
-              onDeleteExpense={handleDeleteExpense}
-            />
-          )}
-          {activeTab === 'clinics' && (
-             <Clinics 
-                clinics={clinics} 
-                onAddClinic={handleAddClinic} 
-                onDeleteClinic={handleDeleteClinic} 
-             />
-          )}
-          {activeTab === 'services' && (
-             <ServicesPage 
-                services={services} 
-                onAddService={handleAddService} 
-                onDeleteService={handleDeleteService} 
-             />
-          )}
+          {activeTab === 'archives' && <Archives patients={patients} onDataUpdate={fetchData} />}
+          {activeTab === 'expenses' && <Expenses expenses={expenses} onAddExpense={handleAddExpense} onDeleteExpense={handleDeleteExpense} />}
+          {activeTab === 'clinics' && <Clinics clinics={clinics} onAddClinic={handleAddClinic} onDeleteClinic={handleDeleteClinic} onSyncRequest={fetchData} />}
+          {activeTab === 'services' && <ServicesPage services={services} onAddService={handleAddService} onDeleteService={handleDeleteService} />}
         </div>
       </main>
     </div>
