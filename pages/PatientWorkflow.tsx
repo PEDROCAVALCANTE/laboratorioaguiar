@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Patient, WorkflowStatus, WorkflowStep, PaymentStatus } from '../types';
-import { X, Save, Clock, CheckCircle2, Activity, Package, Send, RotateCcw, FlaskConical, Smile, Layers, CircleDot, User, Briefcase, Calendar, DollarSign, FileText, Phone, CreditCard, ArrowDown, MoveDown, Flag } from 'lucide-react';
+import { X, Save, Clock, CheckCircle2, Activity, Package, RotateCcw, FlaskConical, Smile, Layers, CircleDot, User, Briefcase, Calendar, DollarSign, FileText, Phone, CreditCard, ArrowDown, MoveDown, Flag, Columns, Grid } from 'lucide-react';
 
 interface PatientWorkflowProps {
   patient: Patient;
@@ -58,6 +58,8 @@ const PatientWorkflow: React.FC<PatientWorkflowProps> = ({ patient, isOpen, onCl
     switch (status) {
       case WorkflowStatus.PLANO_CERA: return 'bg-slate-100 text-slate-700 border-slate-200';
       case WorkflowStatus.MOLDEIRA_INDIVIDUAL: return 'bg-blue-50 text-blue-800 border-blue-200';
+      case WorkflowStatus.BARRA: return 'bg-cyan-50 text-cyan-800 border-cyan-200';
+      case WorkflowStatus.ARMACAO: return 'bg-orange-50 text-orange-800 border-orange-200';
       case WorkflowStatus.MONTAGEM_DENTES: return 'bg-amber-50 text-amber-800 border-amber-200';
       case WorkflowStatus.REMONTAR_DENTES: return 'bg-red-50 text-red-800 border-red-200';
       case WorkflowStatus.ACRILIZAR: return 'bg-purple-50 text-purple-800 border-purple-200';
@@ -70,6 +72,8 @@ const PatientWorkflow: React.FC<PatientWorkflowProps> = ({ patient, isOpen, onCl
     switch (status) {
       case WorkflowStatus.PLANO_CERA: return 'border-slate-300';
       case WorkflowStatus.MOLDEIRA_INDIVIDUAL: return 'border-blue-300';
+      case WorkflowStatus.BARRA: return 'border-cyan-300';
+      case WorkflowStatus.ARMACAO: return 'border-orange-300';
       case WorkflowStatus.MONTAGEM_DENTES: return 'border-amber-300';
       case WorkflowStatus.REMONTAR_DENTES: return 'border-red-300';
       case WorkflowStatus.ACRILIZAR: return 'border-purple-300';
@@ -82,6 +86,8 @@ const PatientWorkflow: React.FC<PatientWorkflowProps> = ({ patient, isOpen, onCl
     switch (status) {
         case WorkflowStatus.PLANO_CERA: return <Layers size={14} />;
         case WorkflowStatus.MOLDEIRA_INDIVIDUAL: return <CircleDot size={14} />;
+        case WorkflowStatus.BARRA: return <Columns size={14} />;
+        case WorkflowStatus.ARMACAO: return <Grid size={14} />;
         case WorkflowStatus.MONTAGEM_DENTES: return <Smile size={14} />;
         case WorkflowStatus.REMONTAR_DENTES: return <RotateCcw size={14} />;
         case WorkflowStatus.ACRILIZAR: return <FlaskConical size={14} />;

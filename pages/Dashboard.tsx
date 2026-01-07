@@ -17,6 +17,8 @@ interface DashboardProps {
 const COLORS = {
   [WorkflowStatus.PLANO_CERA]: '#cbd5e1', // Slate 300
   [WorkflowStatus.MOLDEIRA_INDIVIDUAL]: '#94a3b8', // Slate 400
+  [WorkflowStatus.BARRA]: '#06b6d4', // Cyan 500
+  [WorkflowStatus.ARMACAO]: '#f97316', // Orange 500
   [WorkflowStatus.MONTAGEM_DENTES]: '#fcd34d', // Amber 300
   [WorkflowStatus.REMONTAR_DENTES]: '#f87171', // Red 400
   [WorkflowStatus.ACRILIZAR]: '#818cf8', // Indigo 400

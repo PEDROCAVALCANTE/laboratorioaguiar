@@ -2,6 +2,8 @@
 export enum WorkflowStatus {
   PLANO_CERA = 'Plano de Cera',
   MOLDEIRA_INDIVIDUAL = 'Moldeira individual',
+  BARRA = 'Barra',
+  ARMACAO = 'Armação',
   MONTAGEM_DENTES = 'Montagem de Dentes',
   REMONTAR_DENTES = 'Remontar Dentes',
   ACRILIZAR = 'Acrilizar',
