@@ -103,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
              <div className="flex items-center gap-2 mb-1">
                 <ShieldCheck size={12} className={isNearExpiration ? 'text-red-500' : 'text-blue-500'} />
                 <span className={`text-[10px] font-black uppercase tracking-wider ${isNearExpiration ? 'text-red-600' : 'text-slate-500'}`}>
-                  {isNearExpiration ? 'Pagar Licença' : 'Licenciado'}
+                  Licenciado
                 </span>
                 <span className={`text-[10px] font-black ${isNearExpiration ? 'text-red-700' : 'text-emerald-600'}`}>R$ 89,99</span>
              </div>
