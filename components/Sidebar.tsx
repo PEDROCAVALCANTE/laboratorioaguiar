@@ -80,7 +80,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
               >
                 <Icon 
                   size={18} 
-                  className={`transition-all duration-200 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} 
+                  className={`transition-all duration-200 ${
+                    isActive 
+                      ? 'text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.2)]' 
+                      : 'text-slate-400 group-hover:text-slate-600 drop-shadow-[0_1px_1px_rgba(0,0,0,0.05)]'
+                  }`} 
                   strokeWidth={isActive ? 2.5 : 2}
                 />
                 <span className={isActive ? 'font-bold' : 'font-medium'}>{item.label}</span>
