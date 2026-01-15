@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { LayoutDashboard, Users, TrendingDown, WifiOff, Wifi, X, Archive, Building2, ClipboardList, LogOut, ShieldCheck } from 'lucide-react';
 
@@ -19,6 +20,13 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
     { id: 'clinics', label: 'Clínicas', icon: Building2 },
     { id: 'services', label: 'Serviços', icon: ClipboardList },
   ];
+
+  // Lógica de Vencimento (Dia 16)
+  const today = new Date();
+  const currentDay = today.getDate();
+  const dueDay = 16;
+  // Ativa se faltar 2 dias (dia 14 ou 15) ou se for o próprio dia 16
+  const isNearExpiration = currentDay >= (dueDay - 2) && currentDay <= dueDay;
 
   return (
     <>
@@ -88,13 +96,15 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
         <div className="p-3 mt-auto space-y-2 bg-slate-50/50">
           
           {/* License Info */}
-          <div className="w-full flex flex-col items-center p-2 rounded-lg bg-white border border-slate-100 mb-0.5">
+          <div className={`w-full flex flex-col items-center p-2 rounded-lg bg-white border border-slate-100 mb-0.5 transition-all duration-500 ${isNearExpiration ? 'animate-blink-soft border-red-200 shadow-lg shadow-red-50' : ''}`}>
              <div className="flex items-center gap-1.5 mb-0.5">
-                <ShieldCheck size={11} className="text-blue-500" />
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wide">Licenciado</span>
-                <span className="text-[9px] font-bold text-emerald-600">R$ 89,99</span>
+                <ShieldCheck size={11} className={isNearExpiration ? 'text-red-500' : 'text-blue-500'} />
+                <span className={`text-[9px] font-bold uppercase tracking-wide ${isNearExpiration ? 'text-red-600' : 'text-slate-500'}`}>
+                  {isNearExpiration ? 'Vencendo' : 'Licenciado'}
+                </span>
+                <span className={`text-[9px] font-bold ${isNearExpiration ? 'text-red-700' : 'text-emerald-600'}`}>R$ 89,99</span>
              </div>
-             <span className="text-[9px] font-medium text-slate-400">Vencimento: Dia 16</span>
+             <span className={`text-[9px] font-medium ${isNearExpiration ? 'text-red-400 animate-pulse' : 'text-slate-400'}`}>Vencimento: Dia 16</span>
           </div>
 
           {/* Status Indicator */}
