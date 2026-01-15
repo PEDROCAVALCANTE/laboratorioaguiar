@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Patient, WorkflowStatus, PaymentStatus, Clinic, ServiceItem } from '../types';
 import { 
@@ -332,6 +333,16 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
                     <div className="grid grid-cols-2 gap-3">
                       <div><label className={labelClassName}>Data de Entrada</label><input type="date" className={inputClassName} value={formData.entryDate} onChange={e => setFormData({...formData, entryDate: e.target.value})}/></div>
                       <div><label className={labelClassName}>Data de Entrega</label><input type="date" className={inputClassName} value={formData.dueDate} onChange={e => setFormData({...formData, dueDate: e.target.value})}/></div>
+                    </div>
+                    <div>
+                      <label className={labelClassName}>Observações</label>
+                      <textarea 
+                        className={`${inputClassName} resize-none`} 
+                        rows={2} 
+                        value={formData.notes} 
+                        onChange={e => setFormData({...formData, notes: e.target.value})} 
+                        placeholder="Notas adicionais sobre o trabalho..."
+                      />
                     </div>
                  </div>
                )}
