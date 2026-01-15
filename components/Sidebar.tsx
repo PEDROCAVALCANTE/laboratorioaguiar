@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { LayoutDashboard, Users, TrendingDown, WifiOff, Wifi, X, Archive, Building2, ClipboardList, LogOut, ShieldCheck } from 'lucide-react';
 
@@ -25,7 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
   const today = new Date();
   const currentDay = today.getDate();
   const dueDay = 16;
-  // Ativa se faltar 2 dias (dia 14 ou 15) ou se for o próprio dia 16
+  // Alerta ativa no dia 14, 15 e 16
   const isNearExpiration = currentDay >= (dueDay - 2) && currentDay <= dueDay;
 
   return (
@@ -33,16 +32,16 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
       {/* Mobile Backdrop */}
       {isOpen && (
         <div 
-            className="fixed inset-0 bg-slate-900/10 backdrop-blur-sm z-40 md:hidden animate-in fade-in duration-200"
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 md:hidden animate-in fade-in duration-200"
             onClick={onClose}
         ></div>
       )}
 
       {/* Sidebar Container */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 w-56 bg-white border-r border-slate-100 shadow-sm md:shadow-none transform transition-transform duration-300 ease-in-out flex flex-col
+        fixed inset-y-0 left-0 z-50 w-56 bg-white border-r border-slate-100 shadow-xl md:shadow-none transform transition-transform duration-300 ease-in-out flex flex-col
         ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
-        md:translate-x-0 md:w-56
+        md:translate-x-0 md:w-64
       `}>
         
         {/* Mobile Close Button */}
@@ -53,19 +52,19 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
         </div>
 
         {/* Logo Section */}
-        <div className="pt-6 pb-6 px-6 flex flex-col items-center justify-center border-b border-slate-50">
-            <div className="w-32 h-12 flex items-center justify-center mb-2 transition-transform hover:scale-105 duration-300">
+        <div className="pt-8 pb-6 px-6 flex flex-col items-center justify-center border-b border-slate-50">
+            <div className="w-40 h-14 flex items-center justify-center mb-2 transition-transform hover:scale-105 duration-300">
                 <img 
                 src="https://iili.io/fcoadnn.png" 
                 alt="Aguiar Prótese Dentária" 
                 className="w-full h-full object-contain" 
                 />
             </div>
-            <div className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] text-center">Laboratório</div>
+            <div className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.3em] text-center ml-1">Laboratório</div>
         </div>
         
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
+        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -73,38 +72,38 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg transition-all duration-200 text-[13px] font-medium group relative ${
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-[13px] font-medium group relative ${
                   isActive 
-                    ? 'bg-blue-50/50 text-blue-700' 
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-100' 
                     : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
                 <Icon 
-                  size={17} 
-                  className={`transition-all duration-200 ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600'}`} 
+                  size={18} 
+                  className={`transition-all duration-200 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} 
                   strokeWidth={isActive ? 2.5 : 2}
                 />
                 <span className={isActive ? 'font-bold' : 'font-medium'}>{item.label}</span>
-                
-                {isActive && <div className="absolute right-2 w-1 h-1 rounded-full bg-blue-600"></div>}
               </button>
             );
           })}
         </nav>
 
         {/* Footer */}
-        <div className="p-3 mt-auto space-y-2 bg-slate-50/50">
+        <div className="p-4 mt-auto space-y-3 bg-slate-50/50 border-t border-slate-50">
           
-          {/* License Info */}
-          <div className={`w-full flex flex-col items-center p-2 rounded-lg bg-white border border-slate-100 mb-0.5 transition-all duration-500 ${isNearExpiration ? 'animate-blink-soft border-red-200 shadow-lg shadow-red-50' : ''}`}>
-             <div className="flex items-center gap-1.5 mb-0.5">
-                <ShieldCheck size={11} className={isNearExpiration ? 'text-red-500' : 'text-blue-500'} />
-                <span className={`text-[9px] font-bold uppercase tracking-wide ${isNearExpiration ? 'text-red-600' : 'text-slate-500'}`}>
-                  {isNearExpiration ? 'Vencendo' : 'Licenciado'}
+          {/* License Info Pulsante */}
+          <div className={`w-full flex flex-col items-center p-3 rounded-xl bg-white border transition-all duration-500 ${
+            isNearExpiration ? 'animate-blink-alert border-red-200 shadow-lg' : 'border-slate-100 shadow-sm'
+          }`}>
+             <div className="flex items-center gap-2 mb-1">
+                <ShieldCheck size={12} className={isNearExpiration ? 'text-red-500' : 'text-blue-500'} />
+                <span className={`text-[10px] font-black uppercase tracking-wider ${isNearExpiration ? 'text-red-600' : 'text-slate-500'}`}>
+                  {isNearExpiration ? 'Pagar Licença' : 'Licenciado'}
                 </span>
-                <span className={`text-[9px] font-bold ${isNearExpiration ? 'text-red-700' : 'text-emerald-600'}`}>R$ 89,99</span>
+                <span className={`text-[10px] font-black ${isNearExpiration ? 'text-red-700' : 'text-emerald-600'}`}>R$ 89,99</span>
              </div>
-             <span className={`text-[9px] font-medium ${isNearExpiration ? 'text-red-400 animate-pulse' : 'text-slate-400'}`}>Vencimento: Dia 16</span>
+             <span className={`text-[9px] font-bold ${isNearExpiration ? 'text-red-500' : 'text-slate-400'}`}>Vencimento: Dia 16</span>
           </div>
 
           {/* Status Indicator */}
@@ -113,17 +112,17 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
           }`}>
             <div className="flex items-center gap-1.5">
               <span className={`inline-flex rounded-full h-1.5 w-1.5 ${isOnline ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
-              <span>{isOnline ? 'Sincronizado' : 'Modo Local'}</span>
+              <span>{isOnline ? 'Online' : 'Offline'}</span>
             </div>
-            {isOnline ? <Wifi size={12} className="opacity-80"/> : <WifiOff size={12} className="opacity-80"/>}
+            {isOnline ? <Wifi size={12} /> : <WifiOff size={12} />}
           </div>
 
           {/* Logout Button */}
           <button 
             onClick={onLogout}
-            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold text-slate-400 hover:text-red-600 transition-all"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-[11px] font-bold text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all"
           >
-            <LogOut size={14} /> Sair
+            <LogOut size={14} /> Sair do Sistema
           </button>
         </div>
       </div>

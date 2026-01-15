@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
@@ -22,8 +21,10 @@
       @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
       body {
         font-family: "Inter", sans-serif;
-        background-color: #f8fafc; /* Slate 50 */
-        color: #334155; /* Slate 700 */
+        background-color: #0f172a; /* Azul Marinho Profundo da Logo */
+        color: #f8fafc;
+        margin: 0;
+        overflow: hidden;
       }
       /* Custom Scrollbar minimalista */
       ::-webkit-scrollbar {
@@ -34,50 +35,34 @@
         background: transparent;
       }
       ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
+        background: #334155;
         border-radius: 3px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
+        background: #475569;
       }
       
-      .react-datepicker-wrapper {
-        width: 100%;
+      /* Animação de Alerta de Vencimento com Brilho */
+      @keyframes blink-alert {
+        0%, 100% { 
+          opacity: 1; 
+          transform: scale(1); 
+          box-shadow: 0 0 0px rgba(239, 68, 68, 0);
+          border-color: #f1f5f9;
+        }
+        50% { 
+          opacity: 0.9; 
+          transform: scale(0.98); 
+          background-color: #fff1f2; 
+          border-color: #fecaca;
+          box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+        }
       }
-      .react-datepicker__input-container input {
-        width: 100%;
-      }
-      .react-datepicker {
-        font-family: "Inter", sans-serif;
-        border: 1px solid #f1f5f9;
-        border-radius: 1rem;
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05);
-        overflow: hidden;
-      }
-      .react-datepicker__header {
-        background-color: #fff;
-        border-bottom: 1px solid #f1f5f9;
-      }
-      .react-datepicker__day--selected {
-        background-color: #0d9488 !important; /* Teal 600 */
-        color: white;
-        border-radius: 9999px;
-      }
-      .react-datepicker__day:hover {
-        border-radius: 9999px;
-      }
-
-      /* Animação de Alerta de Vencimento */
-      @keyframes blink-soft {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.7; transform: scale(0.98); background-color: #fef2f2; border-color: #fecaca; }
-      }
-      .animate-blink-soft {
-        animation: blink-soft 2s infinite ease-in-out;
+      .animate-blink-alert {
+        animation: blink-alert 2s infinite ease-in-out;
       }
     </style>
 
-    <!-- IMPORT MAP ESTÁVEL (Firebase v10.12.2) -->
     <script type="importmap">
 {
   "imports": {
@@ -103,10 +88,7 @@
   </head>
 
   <body>
-    <!-- Ponto de montagem da aplicação React -->
     <div id="root"></div>
-
-    <!-- ENTRY POINT DO APP -->
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>
