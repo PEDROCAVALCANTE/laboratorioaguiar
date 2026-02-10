@@ -20,11 +20,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
     { id: 'services', label: 'Serviços', icon: ClipboardList },
   ];
 
-  // Lógica de Vencimento (Dia 16)
+  // Lógica de Vencimento (Dia 10)
   const today = new Date();
   const currentDay = today.getDate();
-  const dueDay = 16;
-  // Alerta ativa no dia 14, 15 e 16
+  const dueDay = 10;
+  // Alerta ativa no dia 08, 09 e 10
   const isNearExpiration = currentDay >= (dueDay - 2) && currentDay <= dueDay;
 
   return (
@@ -37,7 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
         ></div>
       )}
 
-      {/* Sidebar Container - Reduzido para w-48 / md:w-56 */}
+      {/* Sidebar Container - Compacto w-48 / md:w-56 */}
       <div className={`
         fixed inset-y-0 left-0 z-50 w-48 bg-white border-r border-slate-100 shadow-xl md:shadow-none transform transition-transform duration-300 ease-in-out flex flex-col
         ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
@@ -107,7 +107,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
                 </span>
                 <span className={`text-[9px] font-black ${isNearExpiration ? 'text-red-700' : 'text-emerald-600'}`}>R$ 89,99</span>
              </div>
-             <span className={`text-[8px] font-bold ${isNearExpiration ? 'text-red-500' : 'text-slate-400'}`}>Vencimento: Dia 16</span>
+             <span className={`text-[8px] font-bold ${isNearExpiration ? 'text-red-500' : 'text-slate-400'}`}>Vencimento: Dia 10</span>
           </div>
 
           {/* Status Indicator */}

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
@@ -89,7 +90,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#0f172a] flex font-sans overflow-hidden">
       
-      {/* Subscription Alert Modal */}
+      {/* Subscription Alert Modal com Valor R$ 89,99 */}
       {showSubscriptionModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4 animate-in fade-in duration-300">
           <div className="bg-white rounded-[32px] shadow-2xl max-w-sm w-full overflow-hidden border border-white/20 animate-in zoom-in-95 duration-500">
@@ -106,11 +107,11 @@ const App: React.FC = () => {
               </div>
 
               <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight mb-3">
-                Gestão da <br /> Assinatura
+                Assinatura Mensal <br /> R$ 89,99
               </h3>
               
               <p className="text-[13px] text-slate-500 font-medium leading-relaxed mb-8 px-2">
-                Olá! Para garantir que o seu laboratório continue operando com 100% de eficiência e suporte, pedimos a gentileza de regularizar sua assinatura mensal.
+                Olá! Para garantir que o seu laboratório continue operando com suporte total e todas as funcionalidades, pedimos a gentileza de regularizar sua mensalidade de <b>R$ 89,99</b>.
               </p>
 
               <div className="w-full space-y-3">
@@ -120,7 +121,7 @@ const App: React.FC = () => {
                   rel="noopener noreferrer"
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-200 transition-all transform active:scale-[0.97] text-[11px] uppercase tracking-widest flex items-center justify-center gap-2"
                 >
-                  Regularizar Agora (PIX) <CheckCircle2 size={16} />
+                  Pagar via PIX Agora <CheckCircle2 size={16} />
                 </a>
                 <button 
                   onClick={() => setShowSubscriptionModal(false)}
@@ -157,7 +158,6 @@ const App: React.FC = () => {
         onLogout={handleLogout}
       />
       
-      {/* Margem ajustada para md:ml-56 refletindo a sidebar menor */}
       <main className="flex-1 transition-all duration-300 overflow-y-auto h-screen relative md:ml-56 bg-[#0f172a]">
         
         {/* Desktop Custom Header */}
