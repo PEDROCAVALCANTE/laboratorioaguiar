@@ -9,7 +9,7 @@ import Archives from './pages/Archives';
 import Login from './pages/Login';
 import { StorageService } from './services/storage';
 import { Patient, Expense, Clinic, ServiceItem } from './types';
-import { Menu, ShieldCheck, Bell } from 'lucide-react';
+import { Menu, ShieldCheck, Bell, AlertTriangle, X, CheckCircle2 } from 'lucide-react';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -22,11 +22,14 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   useEffect(() => {
     const auth = localStorage.getItem('lab_aguiar_auth');
     if (auth === 'authenticated') {
       setIsAuthenticated(true);
+      // Lembrete de assinatura após login
+      setTimeout(() => setShowSubscriptionModal(true), 1500);
     }
     setIsAuthChecking(false);
   }, []);
@@ -34,6 +37,7 @@ const App: React.FC = () => {
   const handleLogin = () => {
     localStorage.setItem('lab_aguiar_auth', 'authenticated');
     setIsAuthenticated(true);
+    setTimeout(() => setShowSubscriptionModal(true), 800);
   };
 
   const handleLogout = () => {
@@ -85,6 +89,54 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#0f172a] flex font-sans overflow-hidden">
       
+      {/* Subscription Alert Modal */}
+      {showSubscriptionModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="bg-white rounded-[32px] shadow-2xl max-w-sm w-full overflow-hidden border border-white/20 animate-in zoom-in-95 duration-500">
+            <div className="relative p-8 flex flex-col items-center text-center">
+              <button 
+                onClick={() => setShowSubscriptionModal(false)}
+                className="absolute top-6 right-6 p-2 text-slate-300 hover:text-slate-500 hover:bg-slate-50 rounded-full transition-all"
+              >
+                <X size={20} />
+              </button>
+              
+              <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mb-6 ring-8 ring-amber-50/50">
+                <AlertTriangle size={40} className="text-amber-500" strokeWidth={1.5} />
+              </div>
+
+              <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight mb-3">
+                Gestão da <br /> Assinatura
+              </h3>
+              
+              <p className="text-[13px] text-slate-500 font-medium leading-relaxed mb-8 px-2">
+                Olá! Para garantir que o seu laboratório continue operando com 100% de eficiência e suporte, pedimos a gentileza de regularizar sua assinatura mensal.
+              </p>
+
+              <div className="w-full space-y-3">
+                <a 
+                  href="https://nubank.com.br/cobrar/5bvnd/6989c255-415f-4969-8169-46e54bfdb849"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-200 transition-all transform active:scale-[0.97] text-[11px] uppercase tracking-widest flex items-center justify-center gap-2"
+                >
+                  Regularizar Agora (PIX) <CheckCircle2 size={16} />
+                </a>
+                <button 
+                  onClick={() => setShowSubscriptionModal(false)}
+                  className="w-full text-slate-400 hover:text-slate-600 font-bold py-2 text-[10px] uppercase tracking-widest transition-colors"
+                >
+                  Lembrar mais tarde
+                </button>
+              </div>
+            </div>
+            <div className="bg-slate-50 py-3 px-8 border-t border-slate-100 flex justify-center">
+               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">Aguiar Pro System</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Mobile Top Bar */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0f172a] border-b border-slate-800 z-40 flex items-center justify-between px-5">
         <div className="flex items-center gap-3">
@@ -105,7 +157,8 @@ const App: React.FC = () => {
         onLogout={handleLogout}
       />
       
-      <main className="flex-1 transition-all duration-300 overflow-y-auto h-screen relative md:ml-64 bg-[#0f172a]">
+      {/* Margem ajustada para md:ml-56 refletindo a sidebar menor */}
+      <main className="flex-1 transition-all duration-300 overflow-y-auto h-screen relative md:ml-56 bg-[#0f172a]">
         
         {/* Desktop Custom Header */}
         <header className="hidden md:flex items-center justify-between px-10 py-5 bg-[#0f172a] border-b border-slate-800 sticky top-0 z-30">
@@ -155,7 +208,7 @@ const App: React.FC = () => {
           {isLoading && (
             <div className="fixed bottom-6 right-6 z-50 bg-[#1e293b] border border-slate-700 px-5 py-3 rounded-2xl text-[11px] font-bold text-blue-400 shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-5 duration-300">
               <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-              Sincronizando Banco de Dados...
+              Sincronizando...
             </div>
           )}
 

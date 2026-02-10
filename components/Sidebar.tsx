@@ -37,11 +37,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
         ></div>
       )}
 
-      {/* Sidebar Container */}
+      {/* Sidebar Container - Reduzido para w-48 / md:w-56 */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 w-56 bg-white border-r border-slate-100 shadow-xl md:shadow-none transform transition-transform duration-300 ease-in-out flex flex-col
+        fixed inset-y-0 left-0 z-50 w-48 bg-white border-r border-slate-100 shadow-xl md:shadow-none transform transition-transform duration-300 ease-in-out flex flex-col
         ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
-        md:translate-x-0 md:w-64
+        md:translate-x-0 md:w-56
       `}>
         
         {/* Mobile Close Button */}
@@ -52,19 +52,19 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
         </div>
 
         {/* Logo Section */}
-        <div className="pt-8 pb-6 px-6 flex flex-col items-center justify-center border-b border-slate-50">
-            <div className="w-40 h-14 flex items-center justify-center mb-2 transition-transform hover:scale-105 duration-300">
+        <div className="pt-8 pb-6 px-4 flex flex-col items-center justify-center border-b border-slate-50">
+            <div className="w-32 h-12 flex items-center justify-center mb-2 transition-transform hover:scale-105 duration-300">
                 <img 
                 src="https://iili.io/fcoadnn.png" 
                 alt="Aguiar Prótese Dentária" 
                 className="w-full h-full object-contain" 
                 />
             </div>
-            <div className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.3em] text-center ml-1">Laboratório</div>
+            <div className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em] text-center ml-1">Laboratório</div>
         </div>
         
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
+        <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto custom-scrollbar">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -72,14 +72,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-[13px] font-medium group relative ${
+                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all duration-200 text-[12px] font-medium group relative ${
                   isActive 
                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-100' 
                     : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
                 <Icon 
-                  size={18} 
+                  size={16} 
                   className={`transition-all duration-200 ${
                     isActive 
                       ? 'text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.2)]' 
@@ -94,39 +94,39 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
         </nav>
 
         {/* Footer */}
-        <div className="p-4 mt-auto space-y-3 bg-slate-50/50 border-t border-slate-50">
+        <div className="p-3 mt-auto space-y-2.5 bg-slate-50/50 border-t border-slate-50">
           
           {/* License Info Pulsante */}
-          <div className={`w-full flex flex-col items-center p-3 rounded-xl bg-white border transition-all duration-500 ${
+          <div className={`w-full flex flex-col items-center p-2 rounded-xl bg-white border transition-all duration-500 ${
             isNearExpiration ? 'animate-blink-alert border-red-200 shadow-lg' : 'border-slate-100 shadow-sm'
           }`}>
-             <div className="flex items-center gap-2 mb-1">
-                <ShieldCheck size={12} className={isNearExpiration ? 'text-red-500' : 'text-blue-500'} />
-                <span className={`text-[10px] font-black uppercase tracking-wider ${isNearExpiration ? 'text-red-600' : 'text-slate-500'}`}>
+             <div className="flex items-center gap-1.5 mb-0.5">
+                <ShieldCheck size={10} className={isNearExpiration ? 'text-red-500' : 'text-blue-500'} />
+                <span className={`text-[9px] font-black uppercase tracking-wider ${isNearExpiration ? 'text-red-600' : 'text-slate-500'}`}>
                   Licenciado
                 </span>
-                <span className={`text-[10px] font-black ${isNearExpiration ? 'text-red-700' : 'text-emerald-600'}`}>R$ 89,99</span>
+                <span className={`text-[9px] font-black ${isNearExpiration ? 'text-red-700' : 'text-emerald-600'}`}>R$ 89,99</span>
              </div>
-             <span className={`text-[9px] font-bold ${isNearExpiration ? 'text-red-500' : 'text-slate-400'}`}>Vencimento: Dia 16</span>
+             <span className={`text-[8px] font-bold ${isNearExpiration ? 'text-red-500' : 'text-slate-400'}`}>Vencimento: Dia 16</span>
           </div>
 
           {/* Status Indicator */}
-          <div className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-[10px] font-bold border transition-all ${
+          <div className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[9px] font-bold border transition-all ${
             isOnline ? 'bg-emerald-50/50 border-emerald-100/50 text-emerald-700' : 'bg-slate-100 border-slate-200 text-slate-500'
           }`}>
-            <div className="flex items-center gap-1.5">
-              <span className={`inline-flex rounded-full h-1.5 w-1.5 ${isOnline ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
+            <div className="flex items-center gap-1">
+              <span className={`inline-flex rounded-full h-1 w-1 ${isOnline ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
               <span>{isOnline ? 'Online' : 'Offline'}</span>
             </div>
-            {isOnline ? <Wifi size={12} /> : <WifiOff size={12} />}
+            {isOnline ? <Wifi size={10} /> : <WifiOff size={10} />}
           </div>
 
           {/* Logout Button */}
           <button 
             onClick={onLogout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-[11px] font-bold text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all"
+            className="w-full flex items-center justify-center gap-2 px-2 py-1.5 rounded-lg text-[10px] font-bold text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all"
           >
-            <LogOut size={14} /> Sair do Sistema
+            <LogOut size={12} /> Sair
           </button>
         </div>
       </div>
