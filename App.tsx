@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
@@ -10,7 +9,7 @@ import Archives from './pages/Archives';
 import Login from './pages/Login';
 import { StorageService } from './services/storage';
 import { Patient, Expense, Clinic, ServiceItem } from './types';
-import { Menu, ShieldCheck, Bell, AlertTriangle, X, CheckCircle2 } from 'lucide-react';
+import { Menu, ShieldCheck, Bell } from 'lucide-react';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -23,14 +22,11 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(false);
-  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   useEffect(() => {
     const auth = localStorage.getItem('lab_aguiar_auth');
     if (auth === 'authenticated') {
       setIsAuthenticated(true);
-      // Lembrete de assinatura após login
-      setTimeout(() => setShowSubscriptionModal(true), 1500);
     }
     setIsAuthChecking(false);
   }, []);
@@ -38,7 +34,6 @@ const App: React.FC = () => {
   const handleLogin = () => {
     localStorage.setItem('lab_aguiar_auth', 'authenticated');
     setIsAuthenticated(true);
-    setTimeout(() => setShowSubscriptionModal(true), 800);
   };
 
   const handleLogout = () => {
@@ -90,54 +85,6 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#0f172a] flex font-sans overflow-hidden">
       
-      {/* Subscription Alert Modal com Valor R$ 89,99 */}
-      {showSubscriptionModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4 animate-in fade-in duration-300">
-          <div className="bg-white rounded-[32px] shadow-2xl max-w-sm w-full overflow-hidden border border-white/20 animate-in zoom-in-95 duration-500">
-            <div className="relative p-8 flex flex-col items-center text-center">
-              <button 
-                onClick={() => setShowSubscriptionModal(false)}
-                className="absolute top-6 right-6 p-2 text-slate-300 hover:text-slate-500 hover:bg-slate-50 rounded-full transition-all"
-              >
-                <X size={20} />
-              </button>
-              
-              <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mb-6 ring-8 ring-amber-50/50">
-                <AlertTriangle size={40} className="text-amber-500" strokeWidth={1.5} />
-              </div>
-
-              <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight mb-3">
-                Assinatura Mensal <br /> R$ 89,99
-              </h3>
-              
-              <p className="text-[13px] text-slate-500 font-medium leading-relaxed mb-8 px-2">
-                Olá! Para garantir que o seu laboratório continue operando com suporte total e todas as funcionalidades, pedimos a gentileza de regularizar sua mensalidade de <b>R$ 89,99</b>.
-              </p>
-
-              <div className="w-full space-y-3">
-                <a 
-                  href="https://nubank.com.br/cobrar/5bvnd/6989c255-415f-4969-8169-46e54bfdb849"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-200 transition-all transform active:scale-[0.97] text-[11px] uppercase tracking-widest flex items-center justify-center gap-2"
-                >
-                  Pagar via PIX Agora <CheckCircle2 size={16} />
-                </a>
-                <button 
-                  onClick={() => setShowSubscriptionModal(false)}
-                  className="w-full text-slate-400 hover:text-slate-600 font-bold py-2 text-[10px] uppercase tracking-widest transition-colors"
-                >
-                  Lembrar mais tarde
-                </button>
-              </div>
-            </div>
-            <div className="bg-slate-50 py-3 px-8 border-t border-slate-100 flex justify-center">
-               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">Aguiar Pro System</span>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Mobile Top Bar */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0f172a] border-b border-slate-800 z-40 flex items-center justify-between px-5">
         <div className="flex items-center gap-3">
