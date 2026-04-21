@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Expense } from '../types';
-import { Plus, Trash2, Calendar } from 'lucide-react';
+import { Plus, Trash2, Calendar, TrendingDown } from 'lucide-react';
 
 interface ExpensesProps {
   expenses: Expense[];
@@ -19,8 +19,8 @@ const Expenses: React.FC<ExpensesProps> = ({ expenses, onAddExpense, onDeleteExp
   const categories = ['Material', 'Funcionário', 'Aluguel', 'Energia', 'Outros'];
 
   // Minimalist Styling
-  const inputClassName = "w-full bg-white text-slate-900 border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-teal-500/20 focus:border-teal-500 transition-all placeholder:text-slate-400 hover:border-slate-300 shadow-sm";
-  const labelClassName = "block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1";
+  const inputClassName = "w-full bg-white text-slate-900 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all placeholder:text-slate-400 hover:border-slate-300 shadow-sm";
+  const labelClassName = "block text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1.5 ml-1";
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,9 +36,16 @@ const Expenses: React.FC<ExpensesProps> = ({ expenses, onAddExpense, onDeleteExp
   };
 
   return (
-    <div className="space-y-4 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-slate-800">Controle de Despesas</h2>
+    <div className="space-y-5 animate-in fade-in duration-500">
+      <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm group relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-rose-50 rounded-full -mr-20 -mt-20 blur-3xl opacity-50 group-hover:opacity-70 transition-opacity duration-500"></div>
+        <div className="relative z-10">
+          <h2 className="text-xl font-bold text-slate-800 tracking-tight">Controle de Despesas</h2>
+          <div className="flex items-center gap-2 mt-1">
+             <div className="w-8 h-0.5 bg-rose-400 rounded-full"></div>
+             <p className="text-[10px] text-rose-500 font-black uppercase tracking-widest">Gestão Financeira e Saídas</p>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -78,25 +85,31 @@ const Expenses: React.FC<ExpensesProps> = ({ expenses, onAddExpense, onDeleteExp
         {/* Expenses List */}
         <div className="lg:col-span-2 space-y-3">
            {expenses.slice().reverse().map(expense => (
-             <div key={expense.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between group hover:border-red-200 transition">
+             <div key={expense.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between group hover:border-rose-200 transition-all duration-300">
                <div className="flex-1">
-                 <div className="flex items-center gap-2 mb-1">
-                   <h4 className="font-bold text-slate-800 text-sm">{expense.description}</h4>
-                   <span className="text-[10px] px-2 py-0.5 bg-slate-50 text-slate-500 rounded-full border border-slate-100">{expense.category}</span>
-                 </div>
-                 <div className="flex items-center gap-3 text-xs text-slate-500">
-                   <span className="flex items-center gap-1"><Calendar size={12}/> {new Date(expense.date).toLocaleDateString()}</span>
+                 <div className="flex items-center gap-4 mb-2">
+                   <div className="p-2.5 bg-slate-50 rounded-xl text-slate-400 group-hover:bg-rose-500 group-hover:text-white transition-all duration-300">
+                     <TrendingDown size={18} />
+                   </div>
+                   <div>
+                     <h4 className="font-bold text-slate-800 text-base tracking-tight">{expense.description}</h4>
+                     <div className="flex items-center gap-3 mt-1">
+                        <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 bg-slate-50 text-slate-400 rounded-lg border border-slate-100 group-hover:border-rose-100 group-hover:text-rose-500 group-hover:bg-rose-50 transition-colors uppercase">{expense.category}</span>
+                        <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400"><Calendar size={12}/> {new Date(expense.date).toLocaleDateString()}</span>
+                     </div>
+                   </div>
                  </div>
                </div>
-               <div className="flex items-center gap-3">
-                 <span className="font-bold text-red-600 text-base">- R$ {expense.amount.toFixed(2)}</span>
+               <div className="flex items-center gap-4 pl-4 border-l border-slate-50 ml-3">
+                 <span className="font-black text-rose-500 text-lg tracking-tighter">- R$ {expense.amount.toFixed(2)}</span>
                  <button 
                   onClick={() => {
                     if(confirm('Excluir esta despesa?')) onDeleteExpense(expense.id);
                   }}
-                  className="p-1.5 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-md transition opacity-0 group-hover:opacity-100"
+                  className="p-2.5 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
+                  title="Excluir"
                  >
-                   <Trash2 size={16} />
+                   <Trash2 size={18} />
                  </button>
                </div>
              </div>

@@ -105,55 +105,69 @@ const Dashboard: React.FC<DashboardProps> = ({ patients, expenses, onShowPayment
       )}
       
       {/* Banner Minimalista */}
-      <div className="bg-white rounded-xl p-5 border border-slate-100 shadow-sm">
-         <div className="flex justify-between items-center">
+      <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm overflow-hidden relative group">
+         <div className="absolute top-0 right-0 w-64 h-64 bg-teal-50 rounded-full -mr-20 -mt-20 blur-3xl opacity-50 group-hover:opacity-70 transition-opacity duration-500"></div>
+         <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-50 rounded-full -ml-20 -mb-20 blur-3xl opacity-50"></div>
+         
+         <div className="relative flex justify-between items-center">
             <div>
-               <div className="flex items-center gap-2 mb-1">
-                 <GreetingIcon size={14} className={greeting.color} />
-                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Controle de Laboratório</span>
+               <div className="flex items-center gap-2 mb-2">
+                 <div className="p-1 bg-teal-50 rounded text-teal-600">
+                    <GreetingIcon size={14} />
+                 </div>
+                 <span className="text-[10px] font-black text-teal-600/60 uppercase tracking-[0.2em]">Aguiar Dental Lab</span>
                </div>
-               <h1 className="text-xl font-bold text-slate-800 tracking-tight">Olá, Thaynara! {greeting.text}</h1>
+               <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
+                  {greeting.text}, <span className="text-teal-600">Thaynara</span>!
+               </h1>
+               <p className="text-xs text-slate-400 mt-1 font-medium italic">"Excelência em cada detalhe protético."</p>
             </div>
-            <div className="text-right">
-               <p className="text-[11px] font-bold text-slate-700 capitalize">
-                  {new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}
-               </p>
+            <div className="text-right flex flex-col items-end">
+               <div className="bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 mb-2">
+                  <p className="text-[11px] font-black text-slate-600 capitalize">
+                      {new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </p>
+               </div>
+               <div className="flex items-center gap-1.5 text-[9px] font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                  Sistema Operacional
+               </div>
             </div>
          </div>
       </div>
 
       {/* KPI Grid - Compacto */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-            <div className="flex items-center gap-2.5 mb-2">
-                <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg"><Users size={16} /></div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Pedidos Ativos</span>
+          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-teal-200 transition-colors">
+            <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-blue-50 text-blue-500 rounded-xl"><Users size={18} /></div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pedidos Ativos</span>
             </div>
-            <h3 className="text-xl font-bold text-slate-800">{stats.active}</h3>
+            <h3 className="text-2xl font-bold text-slate-800">{stats.active}</h3>
           </div>
 
-          <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-             <div className="flex items-center gap-2.5 mb-2">
-                <div className="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg"><TrendingUp size={16} /></div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Receita Bruta</span>
+          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-emerald-200 transition-colors">
+             <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-emerald-50 text-emerald-500 rounded-xl"><TrendingUp size={18} /></div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Receita Bruto</span>
              </div>
-             <h3 className="text-xl font-bold text-slate-800">{formatCurrency(stats.totalRevenue)}</h3>
+             <h3 className="text-2xl font-bold text-slate-800">{formatCurrency(stats.totalRevenue)}</h3>
           </div>
 
-          <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-             <div className="flex items-center gap-2.5 mb-2">
-                <div className="p-1.5 bg-red-50 text-red-600 rounded-lg"><TrendingDown size={16} /></div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Despesas</span>
+          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-rose-200 transition-colors">
+             <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-rose-50 text-rose-500 rounded-xl"><TrendingDown size={18} /></div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Despesas Totais</span>
              </div>
-             <h3 className="text-xl font-bold text-slate-800">{formatCurrency(stats.totalExpenses)}</h3>
+             <h3 className="text-2xl font-bold text-slate-800">{formatCurrency(stats.totalExpenses)}</h3>
           </div>
 
-          <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-sm">
-             <div className="flex items-center gap-2.5 mb-2 text-white/70">
-                <div className="p-1.5 bg-slate-700 rounded-lg"><Wallet size={16} /></div>
-                <span className="text-[10px] font-bold text-slate-300 uppercase">Líquido</span>
+          <div className="bg-gradient-to-br from-teal-500 to-emerald-600 p-5 rounded-2xl shadow-lg shadow-teal-100 transition-transform hover:scale-[1.02] duration-300">
+             <div className="flex items-center gap-3 mb-3 text-white/80">
+                <div className="p-2 bg-white/20 rounded-xl"><Wallet size={18} /></div>
+                <span className="text-[10px] font-bold text-white/90 uppercase tracking-wider">Saldo Líquido</span>
              </div>
-             <h3 className="text-xl font-bold text-white tracking-tight">{formatCurrency(stats.netProfit)}</h3>
+             <h3 className="text-2xl font-bold text-white tracking-tight">{formatCurrency(stats.netProfit)}</h3>
           </div>
       </div>
 

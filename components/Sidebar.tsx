@@ -13,12 +13,12 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, isOpen = false, onClose, onLogout, onShowPayment }) => {
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'patients', label: 'Pacientes', icon: Users },
-    { id: 'archives', label: 'Arquivo', icon: Archive },
-    { id: 'expenses', label: 'Despesas', icon: TrendingDown },
-    { id: 'clinics', label: 'Clínicas', icon: Building2 },
-    { id: 'services', label: 'Serviços', icon: ClipboardList },
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, color: 'text-indigo-500' },
+    { id: 'patients', label: 'Pacientes', icon: Users, color: 'text-teal-500' },
+    { id: 'archives', label: 'Arquivo', icon: Archive, color: 'text-amber-500' },
+    { id: 'expenses', label: 'Despesas', icon: TrendingDown, color: 'text-red-500' },
+    { id: 'clinics', label: 'Clínicas', icon: Building2, color: 'text-cyan-500' },
+    { id: 'services', label: 'Serviços', icon: ClipboardList, color: 'text-emerald-500' },
   ];
 
   return (
@@ -62,13 +62,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
+            const iconColor = item.color;
             return (
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all duration-200 text-[12px] font-medium group relative ${
                   isActive 
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-100' 
+                    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-100' 
                     : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
@@ -77,7 +78,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
                   className={`transition-all duration-200 ${
                     isActive 
                       ? 'text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.2)]' 
-                      : 'text-slate-400 group-hover:text-slate-600 drop-shadow-[0_1px_1px_rgba(0,0,0,0.05)]'
+                      : `${iconColor} opacity-70 group-hover:opacity-100`
                   }`} 
                   strokeWidth={isActive ? 2.5 : 2}
                 />
@@ -88,16 +89,16 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
         </nav>
 
         {/* Footer */}
-        <div className="p-3 mt-auto space-y-2.5 bg-slate-50/50 border-t border-slate-50">
+        <div className="p-3 mt-auto space-y-2.5 bg-slate-50/30 border-t border-slate-50">
           
           {/* Licenciamento Info */}
           <div 
             onClick={onShowPayment}
-            className="mx-1 p-2.5 bg-white border border-slate-100 rounded-xl shadow-sm cursor-pointer hover:border-blue-200 transition-all group"
+            className="mx-1 p-2.5 bg-white border border-slate-100 rounded-xl shadow-sm cursor-pointer hover:border-emerald-200 transition-all group"
           >
             <div className="flex items-center justify-between mb-1">
                <div className="flex items-center gap-1.5">
-                  <ShieldCheck size={12} className="text-blue-500" />
+                  <ShieldCheck size={12} className="text-emerald-500" />
                   <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">Licenciado</span>
                </div>
                <span className="text-[10px] font-black text-emerald-600 group-hover:scale-110 transition-transform">R$ 89,99</span>
@@ -107,11 +108,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
 
           {/* Status Indicator */}
           <div className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[9px] font-bold border transition-all ${
-            isOnline ? 'bg-emerald-50/50 border-emerald-100/50 text-emerald-700' : 'bg-slate-100 border-slate-200 text-slate-500'
+            isOnline ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-slate-100 border-slate-200 text-slate-500'
           }`}>
             <div className="flex items-center gap-1">
-              <span className={`inline-flex rounded-full h-1 w-1 ${isOnline ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
-              <span>{isOnline ? 'Online' : 'Offline'}</span>
+              <span className={`inline-flex rounded-full h-1.5 w-1.5 ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`}></span>
+              <span>{isOnline ? 'Conectado' : 'Desconectado'}</span>
             </div>
             {isOnline ? <Wifi size={10} /> : <WifiOff size={10} />}
           </div>
@@ -119,9 +120,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
           {/* Logout Button */}
           <button 
             onClick={onLogout}
-            className="w-full flex items-center justify-center gap-2 px-2 py-1.5 rounded-lg text-[10px] font-bold text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all"
+            className="w-full flex items-center justify-center gap-2 px-2 py-1.5 rounded-lg text-[10px] font-bold text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
           >
-            <LogOut size={12} /> Sair
+            <LogOut size={12} /> Sair do Sistema
           </button>
         </div>
       </div>

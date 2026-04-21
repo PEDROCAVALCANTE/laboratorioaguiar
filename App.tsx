@@ -100,15 +100,15 @@ const App: React.FC = () => {
   if (!isAuthenticated) return <Login onLogin={handleLogin} />;
 
   return (
-    <div className="min-h-screen bg-[#0f172a] flex font-sans overflow-hidden">
+    <div className="min-h-screen bg-slate-50 flex font-sans overflow-hidden text-slate-900">
       
       {/* Mobile Top Bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0f172a] border-b border-slate-800 z-40 flex items-center justify-between px-5">
+      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-40 flex items-center justify-between px-5 shadow-sm">
         <div className="flex items-center gap-3">
-            <img src="https://iili.io/fcoadnn.png" alt="Logo" className="h-7 w-auto" />
-            <span className="font-bold text-white text-sm tracking-tight">Laboratório Aguiar</span>
+            <img src="https://iili.io/fcoadnn.png" alt="Logo" className="h-8 w-auto" />
+            <span className="font-bold text-slate-800 text-sm tracking-tight">Laboratório Aguiar</span>
         </div>
-        <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 text-slate-300 hover:bg-slate-800 rounded-lg">
+        <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors">
             <Menu size={24} />
         </button>
       </div>
@@ -127,12 +127,12 @@ const App: React.FC = () => {
         <PaymentReminderModal onClose={() => setShowPaymentModal(false)} />
       )}
       
-      <main className="flex-1 transition-all duration-300 overflow-y-auto h-screen relative md:ml-56 bg-[#0f172a]">
+      <main className="flex-1 transition-all duration-300 overflow-y-auto h-screen relative md:ml-56 bg-slate-50">
         
         {/* Desktop Custom Header */}
-        <header className="hidden md:flex items-center justify-between px-10 py-5 bg-[#0f172a] border-b border-slate-800 sticky top-0 z-30">
+        <header className="hidden md:flex items-center justify-between px-10 py-5 bg-white border-b border-slate-100 sticky top-0 z-30 shadow-sm">
             <div className="flex items-center gap-4">
-               <h2 className="text-xl font-bold text-white tracking-tight">
+               <h2 className="text-xl font-bold text-slate-800 tracking-tight">
                   {activeTab === 'dashboard' && 'Painel de Controle'}
                   {activeTab === 'patients' && 'Pacientes & Fluxo'}
                   {activeTab === 'archives' && 'Histórico Geral'}
@@ -140,8 +140,8 @@ const App: React.FC = () => {
                   {activeTab === 'clinics' && 'Clínicas Parceiras'}
                   {activeTab === 'services' && 'Tabela de Serviços'}
                </h2>
-               <div className="h-5 w-px bg-slate-800"></div>
-               <div className="flex items-center gap-2 text-[10px] font-black text-blue-400 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20 uppercase tracking-widest">
+               <div className="h-5 w-px bg-slate-200"></div>
+               <div className="flex items-center gap-2 text-[10px] font-black text-teal-600 bg-teal-50 px-3 py-1.5 rounded-full border border-teal-100 uppercase tracking-widest">
                   <ShieldCheck size={12} />
                   Aguiar Pro
                </div>
@@ -150,22 +150,22 @@ const App: React.FC = () => {
             <div className="flex items-center gap-6">
                 <div className="flex items-center gap-5">
                   <div className="text-right">
-                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                           {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
                       </p>
                   </div>
-                  <button className="p-2.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all relative group">
+                  <button className="p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all relative group">
                     <Bell size={20} />
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full border-2 border-[#0f172a] group-hover:animate-ping"></span>
+                    <span className="absolute top-2 right-2 w-2 h-2 bg-teal-500 rounded-full border-2 border-white group-hover:animate-ping"></span>
                   </button>
                 </div>
-                <div className="h-8 w-px bg-slate-800"></div>
+                <div className="h-8 w-px bg-slate-100"></div>
                 <div className="flex items-center gap-3">
                    <div className="text-right">
-                      <p className="text-xs font-bold text-white leading-none">Thaynara Aguiar</p>
-                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Administradora</p>
+                      <p className="text-xs font-bold text-slate-800 leading-none">Thaynara Aguiar</p>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Administradora</p>
                    </div>
-                   <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-sm font-black shadow-lg shadow-blue-900/20 ring-2 ring-slate-800 cursor-pointer hover:bg-blue-500 transition-all">
+                   <div className="w-10 h-10 rounded-xl bg-teal-500 text-white flex items-center justify-center text-sm font-black shadow-lg shadow-teal-100 ring-2 ring-slate-50 cursor-pointer hover:bg-teal-400 transition-all">
                       TA
                    </div>
                 </div>

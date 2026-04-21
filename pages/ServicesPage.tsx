@@ -15,8 +15,8 @@ const ServicesPage: React.FC<ServicesPageProps> = ({ services, onAddService, onD
   });
 
   // Minimalist Styling
-  const inputClassName = "w-full bg-white text-slate-900 border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-teal-500/20 focus:border-teal-500 transition-all placeholder:text-slate-400 hover:border-slate-300 shadow-sm";
-  const labelClassName = "block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1";
+  const inputClassName = "w-full bg-white text-slate-900 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all placeholder:text-slate-400 hover:border-slate-300 shadow-sm";
+  const labelClassName = "block text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1.5 ml-1";
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,13 +33,17 @@ const ServicesPage: React.FC<ServicesPageProps> = ({ services, onAddService, onD
     <div className="space-y-4 animate-in fade-in duration-500">
       
       {/* Banner Minimalista */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-blue-50/30 to-teal-50/30 border border-slate-200 p-5 shadow-sm">
+      <div className="relative overflow-hidden rounded-2xl bg-white border border-slate-100 p-6 shadow-sm group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-teal-50 rounded-full -mr-20 -mt-20 blur-3xl opacity-50 group-hover:opacity-70 transition-opacity duration-500"></div>
         <div className="relative z-10 flex justify-between items-center">
              <div>
                 <h2 className="text-xl font-bold text-slate-800 tracking-tight">Catálogo de Serviços</h2>
-                <p className="text-xs text-slate-500 mt-1 font-medium">Gerencie a tabela de preços e tipos de próteses.</p>
+                <div className="flex items-center gap-2 mt-1">
+                   <div className="w-8 h-0.5 bg-teal-500 rounded-full"></div>
+                   <p className="text-[10px] text-teal-600/70 font-black uppercase tracking-widest">Tabela de Preços e Próteses</p>
+                </div>
             </div>
-            <div className="bg-white/80 p-2 rounded-lg shadow-sm border border-slate-100 text-teal-600 hidden sm:block">
+            <div className="bg-teal-500 p-2.5 rounded-xl text-white shadow-lg shadow-teal-100 transition-transform hover:scale-110 duration-300">
                 <ClipboardList size={20} />
             </div>
         </div>
@@ -73,22 +77,23 @@ const ServicesPage: React.FC<ServicesPageProps> = ({ services, onAddService, onD
         {/* Services List */}
         <div className="lg:col-span-2 space-y-3">
            {services.map(service => (
-             <div key={service.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between group hover:border-teal-200 transition">
+             <div key={service.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between group hover:border-teal-200 transition-all duration-300">
                <div className="flex-1">
-                 <div className="flex items-center gap-2 mb-1">
-                   <h4 className="font-bold text-slate-800 text-sm">{service.name}</h4>
+                 <div className="flex items-center gap-3">
+                   <div className="w-2 h-2 rounded-full bg-teal-500"></div>
+                   <h4 className="font-bold text-slate-700 text-sm tracking-tight">{service.name}</h4>
                  </div>
                </div>
-               <div className="flex items-center gap-3">
-                 <span className="font-bold text-teal-600 text-base">R$ {service.price.toFixed(2)}</span>
+               <div className="flex items-center gap-4">
+                 <span className="font-black text-teal-600 text-base">R$ {service.price.toFixed(2)}</span>
                  <button 
                   onClick={() => {
                     if(confirm('Excluir este serviço?')) onDeleteService(service.id);
                   }}
-                  className="p-1.5 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-md transition"
+                  className="p-2.5 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
                   title="Excluir"
                  >
-                   <Trash2 size={16} />
+                   <Trash2 size={18} />
                  </button>
                </div>
              </div>

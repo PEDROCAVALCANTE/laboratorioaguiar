@@ -56,8 +56,8 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
   const [formData, setFormData] = useState<Partial<Patient>>(initialFormState);
   const [isEditing, setIsEditing] = useState(false);
 
-  const inputClassName = "w-full bg-white text-slate-900 border border-slate-200 rounded-lg px-3 py-1.5 text-[12px] focus:outline-none focus:ring-1 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 shadow-sm";
-  const labelClassName = "block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1 ml-0.5";
+  const inputClassName = "w-full bg-white text-slate-900 border border-slate-200 rounded-xl px-3 py-2 text-[12px] focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all placeholder:text-slate-400 shadow-sm";
+  const labelClassName = "block text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1.5 ml-1";
 
   const filteredPatients = patients.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -122,34 +122,34 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
     <div className="space-y-4 animate-in fade-in duration-500">
       
       {/* Header compact */}
-      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+      <div className="flex justify-between items-center bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
         <div>
-           <h1 className="text-lg font-bold text-slate-800 tracking-tight">Pacientes</h1>
-           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Controle de Fluxo e Registros</p>
+           <h1 className="text-xl font-bold text-slate-800 tracking-tight">Pacientes</h1>
+           <p className="text-[10px] text-teal-600/60 font-black uppercase tracking-[0.2em]">Fluxo de Próteses & Registros</p>
         </div>
         <button 
           onClick={() => handleOpenForm()} 
-          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all shadow-sm flex items-center gap-1.5 active:scale-95"
+          className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-xl text-[11px] font-bold transition-all shadow-lg shadow-teal-100 flex items-center gap-2 active:scale-95"
         >
           <Plus size={14} /> Novo Registro
         </button>
       </div>
 
       {/* Filter Bar compact */}
-      <div className="flex flex-col sm:flex-row gap-2 bg-white p-2 rounded-xl shadow-sm border border-slate-100">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-2.5 text-slate-400" size={14} />
+      <div className="flex flex-col sm:flex-row gap-2 bg-white p-2.5 rounded-2xl shadow-sm border border-slate-100">
+        <div className="relative flex-1 group">
+          <Search className="absolute left-3 top-2.5 text-slate-300 group-focus-within:text-teal-500 transition-colors" size={14} />
           <input 
             type="text" 
             placeholder="Buscar por nome ou clínica..." 
-            className="w-full pl-9 pr-4 py-1.5 bg-transparent rounded-lg text-[12px] outline-none text-slate-700 font-medium placeholder:text-slate-400" 
+            className="w-full pl-9 pr-4 py-2 bg-slate-50/50 rounded-xl text-[12px] outline-none text-slate-700 font-medium placeholder:text-slate-400 focus:bg-white transition-all border border-transparent focus:border-slate-100" 
             value={searchTerm} 
             onChange={(e) => setSearchTerm(e.target.value)} 
           />
         </div>
-        <div className="h-6 w-px bg-slate-100 hidden sm:block"></div>
+        <div className="h-6 w-px bg-slate-100 hidden sm:block self-center"></div>
         <select 
-          className="p-1.5 bg-transparent text-[11px] font-bold text-slate-500 outline-none cursor-pointer hover:text-slate-700 transition-colors" 
+          className="p-2 bg-slate-50/50 rounded-xl text-[11px] font-black text-slate-500 outline-none cursor-pointer hover:text-slate-700 transition-colors border border-transparent focus:border-slate-100" 
           value={filterStatus} 
           onChange={(e) => setFilterStatus(e.target.value)}
         >
@@ -175,35 +175,35 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
           return (
             <div 
               key={patient.id} 
-              className={`bg-white rounded-xl border transition-all duration-200 overflow-hidden ${
-                isExpanded ? 'border-blue-200 shadow-md ring-1 ring-blue-50' : 'border-slate-100 shadow-sm hover:border-slate-200'
+              className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden ${
+                isExpanded ? 'border-teal-200 shadow-lg shadow-teal-50 ring-1 ring-teal-50' : 'border-slate-100 shadow-sm hover:border-teal-100'
               }`}
             >
               {/* Main Content Row */}
               <div 
-                className="lg:grid lg:grid-cols-12 gap-4 items-center p-3 cursor-pointer group"
+                className="lg:grid lg:grid-cols-12 gap-4 items-center p-4 cursor-pointer group"
                 onClick={() => { setSelectedPatient(patient); setIsWorkflowOpen(true); }}
               >
                 {/* Mobile: Header with expansion toggle */}
                 <div className="lg:col-span-4 flex items-center gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 font-bold text-[10px] group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 font-bold text-[11px] group-hover:bg-teal-500 group-hover:text-white transition-all duration-300">
                     {patient.name.charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-[13px] font-bold text-slate-800 group-hover:text-blue-700 truncate leading-tight transition-colors">
+                    <h3 className="text-[14px] font-bold text-slate-800 group-hover:text-teal-600 truncate leading-tight transition-colors">
                       {patient.name}
                     </h3>
                     <div className="flex items-center gap-2 lg:hidden">
                        <span className="text-[10px] text-slate-400 font-medium truncate max-w-[120px]">{patient.clinic}</span>
                        <button 
                          onClick={(e) => toggleExpand(e, patient.id)}
-                         className="p-1 text-blue-500 hover:bg-blue-50 rounded transition-colors"
+                         className="p-1 text-teal-500 hover:bg-teal-50 rounded transition-colors"
                        >
                          {isExpanded ? <ChevronUp size={12}/> : <ChevronDown size={12}/>}
                        </button>
                     </div>
                     {/* Desktop Clinic/Dentist Subtext */}
-                    <div className="hidden lg:flex items-center gap-2 text-[10px] text-slate-400 mt-0.5">
+                    <div className="hidden lg:flex items-center gap-2 text-[10px] text-slate-400 mt-1 font-medium">
                        <span className="truncate max-w-[150px]">{patient.clinic}</span>
                        <span className="opacity-30">•</span>
                        <span className="truncate">{patient.doctorName}</span>
@@ -213,8 +213,8 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
 
                 {/* Work Info Column */}
                 <div className="hidden lg:block lg:col-span-3">
-                  <div className="text-[11px] font-semibold text-slate-600 truncate">{patient.prosthesisType}</div>
-                  <div className="text-[9px] text-slate-400 mt-0.5 font-medium">Entrada: {new Date(patient.entryDate).toLocaleDateString()}</div>
+                  <div className="text-[11px] font-bold text-slate-600 truncate">{patient.prosthesisType}</div>
+                  <div className="text-[9px] text-slate-400 mt-1 font-bold">Entrada: {new Date(patient.entryDate).toLocaleDateString()}</div>
                 </div>
 
                 {/* Status Column */}
@@ -224,16 +224,16 @@ const Patients: React.FC<PatientsProps> = ({ patients, clinicsList, servicesList
 
                 {/* Value Column */}
                 <div className="hidden lg:block lg:col-span-1 text-right">
-                  <div className="text-[11px] font-bold text-slate-700">R$ {patient.serviceValue.toFixed(2)}</div>
-                  <div className={`text-[9px] font-bold ${patient.paymentStatus === 'Pago' ? 'text-emerald-500' : 'text-amber-500'}`}>
+                  <div className="text-[11px] font-black text-slate-800 tracking-tight">R$ {patient.serviceValue.toFixed(2)}</div>
+                  <div className={`text-[9px] font-black uppercase tracking-tighter mt-0.5 ${patient.paymentStatus === 'Pago' ? 'text-emerald-500' : 'text-amber-500'}`}>
                     {patient.paymentStatus}
                   </div>
                 </div>
 
                 {/* Actions Column (Desktop) */}
-                <div className="hidden lg:flex lg:col-span-2 justify-end gap-1">
-                  <button onClick={(e) => { e.stopPropagation(); handleOpenForm(patient); }} className="p-1.5 text-slate-300 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Editar"><Edit2 size={13}/></button>
-                  <button onClick={(e) => { e.stopPropagation(); setPatientToDelete(patient); }} className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Excluir"><Trash2 size={13}/></button>
+                <div className="hidden lg:flex lg:col-span-2 justify-end gap-1 px-2">
+                  <button onClick={(e) => { e.stopPropagation(); handleOpenForm(patient); }} className="p-2 text-slate-300 hover:text-teal-500 hover:bg-teal-50 rounded-xl transition-all" title="Editar"><Edit2 size={13}/></button>
+                  <button onClick={(e) => { e.stopPropagation(); setPatientToDelete(patient); }} className="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all" title="Excluir"><Trash2 size={13}/></button>
                 </div>
 
                 {/* Mobile: Compact Status/Actions Row */}
