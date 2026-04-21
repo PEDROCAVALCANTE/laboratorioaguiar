@@ -11,6 +11,7 @@ import {
 interface DashboardProps {
   patients: Patient[];
   expenses: Expense[];
+  onShowPayment?: () => void;
 }
 
 const COLORS = {
@@ -24,7 +25,7 @@ const COLORS = {
   [WorkflowStatus.FINALIZADO]: '#34d399', 
 };
 
-const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
+const Dashboard: React.FC<DashboardProps> = ({ patients, expenses, onShowPayment }) => {
 
   const stats = useMemo(() => {
     const active = patients.filter(p => p.isActive).length;
@@ -75,8 +76,33 @@ const Dashboard: React.FC<DashboardProps> = ({ patients, expenses }) => {
   const greeting = getGreetingData();
   const GreetingIcon = greeting.icon;
 
+  const today = new Date();
+  const day = today.getDate();
+  const isNearDue = day >= 5 && day <= 10;
+
   return (
     <div className="space-y-5 animate-in fade-in duration-500">
+      
+      {/* Alerta de Mensalidade */}
+      {isNearDue && (
+        <div className="bg-gradient-to-r from-amber-500 to-orange-600 rounded-xl p-4 text-white shadow-lg shadow-amber-200 flex items-center justify-between animate-pulse">
+           <div className="flex items-center gap-3">
+              <div className="bg-white/20 p-2 rounded-lg">
+                 <ShoppingCart size={20} />
+              </div>
+              <div>
+                 <p className="text-xs font-bold uppercase tracking-wider opacity-80">Atenção Administradora</p>
+                 <h4 className="text-sm font-bold">Lembrete: Mensalidade do sistema vence dia 10</h4>
+              </div>
+           </div>
+           <button 
+             onClick={onShowPayment}
+             className="bg-white text-orange-600 px-4 py-2 rounded-lg text-xs font-bold hover:bg-orange-50 transition-colors flex items-center gap-2"
+           >
+              Pagar Agora <ArrowRight size={14} />
+           </button>
+        </div>
+      )}
       
       {/* Banner Minimalista */}
       <div className="bg-white rounded-xl p-5 border border-slate-100 shadow-sm">

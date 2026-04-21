@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Sidebar from './components/Sidebar';
+import PaymentReminderModal from './components/PaymentReminderModal';
 import Dashboard from './pages/Dashboard';
 import Patients from './pages/Patients';
 import Expenses from './pages/Expenses';
@@ -22,6 +23,22 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const today = new Date();
+      const day = today.getDate();
+      // Mostrar entre o dia 5 e 10
+      if (day >= 5 && day <= 10) {
+        const lastShown = sessionStorage.getItem('payment_modal_shown');
+        if (!lastShown) {
+          setShowPaymentModal(true);
+          sessionStorage.setItem('payment_modal_shown', 'true');
+        }
+      }
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const auth = localStorage.getItem('lab_aguiar_auth');
@@ -103,7 +120,12 @@ const App: React.FC = () => {
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         onLogout={handleLogout}
+        onShowPayment={() => setShowPaymentModal(true)}
       />
+
+      {showPaymentModal && (
+        <PaymentReminderModal onClose={() => setShowPaymentModal(false)} />
+      )}
       
       <main className="flex-1 transition-all duration-300 overflow-y-auto h-screen relative md:ml-56 bg-[#0f172a]">
         
@@ -160,7 +182,7 @@ const App: React.FC = () => {
           )}
 
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {activeTab === 'dashboard' && <Dashboard patients={patients} expenses={expenses} />}
+            {activeTab === 'dashboard' && <Dashboard patients={patients} expenses={expenses} onShowPayment={() => setShowPaymentModal(true)} />}
             {activeTab === 'patients' && (
               <Patients 
                 patients={patients} 

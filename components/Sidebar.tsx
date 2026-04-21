@@ -8,9 +8,10 @@ interface SidebarProps {
   isOpen?: boolean;
   onClose?: () => void;
   onLogout: () => void;
+  onShowPayment?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, isOpen = false, onClose, onLogout }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, isOpen = false, onClose, onLogout, onShowPayment }) => {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'patients', label: 'Pacientes', icon: Users },
@@ -19,13 +20,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
     { id: 'clinics', label: 'Clínicas', icon: Building2 },
     { id: 'services', label: 'Serviços', icon: ClipboardList },
   ];
-
-  // Lógica de Vencimento (Dia 10)
-  const today = new Date();
-  const currentDay = today.getDate();
-  const dueDay = 10;
-  // Alerta ativa no dia 08, 09 e 10
-  const isNearExpiration = currentDay >= (dueDay - 2) && currentDay <= dueDay;
 
   return (
     <>
@@ -96,18 +90,19 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOnline, is
         {/* Footer */}
         <div className="p-3 mt-auto space-y-2.5 bg-slate-50/50 border-t border-slate-50">
           
-          {/* License Info Pulsante */}
-          <div className={`w-full flex flex-col items-center p-2 rounded-xl bg-white border transition-all duration-500 ${
-            isNearExpiration ? 'animate-blink-alert border-red-200 shadow-lg' : 'border-slate-100 shadow-sm'
-          }`}>
-             <div className="flex items-center gap-1.5 mb-0.5">
-                <ShieldCheck size={10} className={isNearExpiration ? 'text-red-500' : 'text-blue-500'} />
-                <span className={`text-[9px] font-black uppercase tracking-wider ${isNearExpiration ? 'text-red-600' : 'text-slate-500'}`}>
-                  Licenciado
-                </span>
-                <span className={`text-[9px] font-black ${isNearExpiration ? 'text-red-700' : 'text-emerald-600'}`}>R$ 89,99</span>
-             </div>
-             <span className={`text-[8px] font-bold ${isNearExpiration ? 'text-red-500' : 'text-slate-400'}`}>Vencimento: Dia 10</span>
+          {/* Licenciamento Info */}
+          <div 
+            onClick={onShowPayment}
+            className="mx-1 p-2.5 bg-white border border-slate-100 rounded-xl shadow-sm cursor-pointer hover:border-blue-200 transition-all group"
+          >
+            <div className="flex items-center justify-between mb-1">
+               <div className="flex items-center gap-1.5">
+                  <ShieldCheck size={12} className="text-blue-500" />
+                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">Licenciado</span>
+               </div>
+               <span className="text-[10px] font-black text-emerald-600 group-hover:scale-110 transition-transform">R$ 89,99</span>
+            </div>
+            <p className="text-[8px] text-slate-400 font-bold text-center">Vencimento: Dia 10</p>
           </div>
 
           {/* Status Indicator */}

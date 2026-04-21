@@ -214,9 +214,11 @@ const Archives: React.FC<ArchivesProps> = ({ patients, onDataUpdate }) => {
   };
 
   const getStatusBadge = (status: WorkflowStatus) => {
-    const styles = {
+    const styles: Record<string, string> = {
       [WorkflowStatus.PLANO_CERA]: 'bg-slate-100 text-slate-600',
       [WorkflowStatus.MOLDEIRA_INDIVIDUAL]: 'bg-blue-50 text-blue-700',
+      [WorkflowStatus.BARRA]: 'bg-cyan-50 text-cyan-700',
+      [WorkflowStatus.ARMACAO]: 'bg-orange-50 text-orange-700',
       [WorkflowStatus.MONTAGEM_DENTES]: 'bg-amber-50 text-amber-700',
       [WorkflowStatus.REMONTAR_DENTES]: 'bg-red-50 text-red-700',
       [WorkflowStatus.ACRILIZAR]: 'bg-purple-50 text-purple-700',
